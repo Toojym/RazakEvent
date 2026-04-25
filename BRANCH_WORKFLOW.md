@@ -18,21 +18,22 @@
 
 ## How to Start a New Task
 
+### Step 1: Switch to dev and get latest
 ```bash
-# 1. Switch to dev and get latest
 git checkout dev
 git pull origin dev
 
 # 2. Create your feature branch (use Jira task ID)
-git checkout -b feature/RE-23-branch-workflow
+git checkout -b feature/RE-XX-description
 
 # 3. Make your changes
-# (edit files, add code, etc.)
+# # edit your files
+
 
 # 4. Commit and push
 git add .
-git commit -m "RE-23: Add branch workflow documentation"
-git push origin feature/RE-23-branch-workflow
+git commit -m "RE-XX: Description of work"
+git push origin feature/RE-XX-description
 
 # 5. Create Pull Request on GitHub
 
