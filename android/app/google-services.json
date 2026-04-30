@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "563121899307",
+    "project_id": "razakevent",
+    "storage_bucket": "razakevent.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563121899307:android:db3653565b27a30f65e76e",
+        "android_client_info": {
+          "package_name": "my.utm.razakevent.razak_event"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgaIhSFXIOHOHokCNbpoJXnKKlQGPg1eQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
