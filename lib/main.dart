@@ -20,9 +20,41 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Firebase Auth',
+      title: 'RazakEvent', // Project Title verbatim
       theme: ThemeData(
-        primarySwatch: Colors.orange,
+        useMaterial3: true,
+        // Color scheme derived from RazakEvent UI assets
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFE65100), // Primary Orange from image_1ea245.jpg[cite: 1]
+          brightness: Brightness.dark,
+          surface: Colors.black,
+          primary: const Color(0xFF0056A4), // Button Blue from image_1ea23e.jpg[cite: 1]
+        ),
+        
+        // Customizing text fields to match the rounded white style in image_1ea23e.jpg[cite: 1]
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          labelStyle: const TextStyle(color: Colors.black54),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.0),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        ),
+
+        // Customizing buttons to match the rounded blue style in image_1ea223.jpg[cite: 1]
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0056A4),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
       home: const AuthPage(),
     );
@@ -61,13 +93,15 @@ class _AuthPageState extends State<AuthPage> {
         );
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isLogin ? "Login Successful!" : "Account Created!",
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isLogin ? "Login Successful!" : "Account Created!",
+            ),
           ),
-        ),
-      );
+        );
+      }
     } on FirebaseAuthException catch (e) {
       String message = "Authentication failed";
 
@@ -83,13 +117,17 @@ class _AuthPageState extends State<AuthPage> {
         message = "Invalid email address.";
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -108,13 +146,15 @@ class _AuthPageState extends State<AuthPage> {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Password reset email sent! Check your inbox.",
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Password reset email sent! Check your inbox.",
+            ),
           ),
-        ),
-      );
+        );
+      }
     } on FirebaseAuthException catch (e) {
       String message = "Failed to send reset email.";
 
@@ -124,9 +164,11 @@ class _AuthPageState extends State<AuthPage> {
         message = "Invalid email address.";
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
     }
   }
 
@@ -140,83 +182,102 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isLogin ? "Login" : "Sign Up"),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.lock,
-                  size: 80,
-                  color: Colors.orange,
-                ),
-                const SizedBox(height: 30),
-
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    border: OutlineInputBorder(),
+      // The background logic can eventually be replaced with the image_1ea245.jpg texture[cite: 1]
+      body: Container(
+        decoration: const BoxDecoration(
+          color: Colors.black,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo Placeholder matching RazakEvent branding[cite: 1]
+                  const Text(
+                    "RazakEvent",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-
-                const SizedBox(height: 20),
-
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Password",
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 10),
+                  Text(
+                    isLogin ? "Welcome Back" : "Join KTR Community",
+                    style: const TextStyle(color: Colors.white70),
                   ),
-                ),
+                  const SizedBox(height: 40),
 
-                const SizedBox(height: 10),
-
-                if (isLogin)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: resetPassword,
-                      child: const Text("Forgot Password?"),
+                  TextField(
+                    controller: emailController,
+                    style: const TextStyle(color: Colors.black),
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      hintText: "UTM Email / Matrix No.",
                     ),
                   ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: authenticate,
+                  TextField(
+                    controller: passwordController,
+                    style: const TextStyle(color: Colors.black),
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      hintText: "Password",
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  if (isLogin)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: resetPassword,
+                        child: const Text("Forgot Password?"),
+                      ),
+                    ),
+
+                  const SizedBox(height: 30),
+
+                  isLoading
+                      ? const CircularProgressIndicator()
+                      : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: authenticate,
+                      child: Text(
+                        isLogin ? "Login" : "Sign Up",
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        isLogin = !isLogin;
+                      });
+                    },
                     child: Text(
-                      isLogin ? "Login" : "Create Account",
+                      isLogin
+                          ? "Don't have an account? Sign up here!"
+                          : "Already have an account? Login here!",
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 20),
-
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      isLogin = !isLogin;
-                    });
-                  },
-                  child: Text(
-                    isLogin
-                        ? "Don't have an account? Sign Up"
-                        : "Already have an account? Login",
+                  
+                  const SizedBox(height: 50),
+                  const Text(
+                    "Powered by Puzl",
+                    style: TextStyle(color: Colors.white38, fontSize: 12),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
