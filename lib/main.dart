@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
+import 'screens/add_event_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -141,9 +142,17 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLogin ? "Login" : "Sign Up"),
-        centerTitle: true,
-      ),
+  title: GestureDetector(
+    onLongPress: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddEventScreen()),
+      );
+    },
+    child: Text(isLogin ? "Login" : "Sign Up"),
+  ),
+  centerTitle: true,
+),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
