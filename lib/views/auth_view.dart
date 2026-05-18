@@ -12,11 +12,15 @@ class AuthView extends StatefulWidget {
 class _AuthViewState extends State<AuthView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController matricController = TextEditingController();
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    nameController.dispose();
+    matricController.dispose();
     super.dispose();
   }
 
@@ -24,6 +28,8 @@ class _AuthViewState extends State<AuthView> {
     final errorMessage = await viewModel.authenticate(
       emailController.text,
       passwordController.text,
+      name: nameController.text,
+      matric: matricController.text,
     );
 
     if (!context.mounted) return;
@@ -82,6 +88,25 @@ class _AuthViewState extends State<AuthView> {
                       color: Colors.orange,
                     ),
                     const SizedBox(height: 30),
+
+                    if (!viewModel.isLogin) ...[
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          labelText: "Full Name",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: matricController,
+                        decoration: const InputDecoration(
+                          labelText: "Matric Number",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
 
                     TextField(
                       controller: emailController,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../repositories/user_repository.dart';
+import '../models/user_model.dart';
 
 class AuthViewModel extends ChangeNotifier {
+  final UserRepository _userRepository = UserRepository();
+
   bool _isLogin = true;
   bool _isLoading = false;
 
@@ -13,7 +17,7 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> authenticate(String email, String password) async {
+  Future<String?> authenticate(String email, String password, {String? name, String? matric}) async {
     _isLoading = true;
     notifyListeners();
     String? errorMessage;
@@ -25,10 +29,27 @@ class AuthViewModel extends ChangeNotifier {
           password: password.trim(),
         );
       } else {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        if (name == null || name.trim().isEmpty || matric == null || matric.trim().isEmpty) {
+           throw FirebaseAuthException(code: 'missing-fields', message: 'Name and Matric are required.');
+        }
+        
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email.trim(),
           password: password.trim(),
         );
+
+        // Create Firestore profile
+        if (userCredential.user != null) {
+          UserModel newUser = UserModel(
+            uid: userCredential.user!.uid,
+            name: name.trim(),
+            matric: matric.trim(),
+            kolej: '', // Can be updated later in profile
+            meritPoints: 0,
+            role: 'student',
+          );
+          await _userRepository.createUser(newUser);
+        }
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -41,6 +62,8 @@ class AuthViewModel extends ChangeNotifier {
         errorMessage = "Password is too weak.";
       } else if (e.code == 'invalid-email') {
         errorMessage = "Invalid email address.";
+      } else if (e.code == 'missing-fields') {
+        errorMessage = e.message;
       } else {
         errorMessage = "Authentication failed.";
       }

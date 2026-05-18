@@ -6,10 +6,11 @@ class EventModel {
   final String description;
   final DateTime date;
   final String location;
-  final int meritPointsProvided;
-  final String clubId;
+  final int attendeeMeritPoints;
+  final int crewMeritPoints;
   final String createdBy;
-  final String qrCodeData;
+  final String attendeeQrCodeData;
+  final String crewQrCodeData;
   final String? imageUrl;
   final int? maxCapacity;
 
@@ -19,10 +20,11 @@ class EventModel {
     required this.description,
     required this.date,
     required this.location,
-    required this.meritPointsProvided,
-    required this.clubId,
+    required this.attendeeMeritPoints,
+    required this.crewMeritPoints,
     required this.createdBy,
-    required this.qrCodeData,
+    required this.attendeeQrCodeData,
+    required this.crewQrCodeData,
     this.imageUrl,
     this.maxCapacity,
   });
@@ -33,10 +35,11 @@ class EventModel {
       'description': description,
       'date': Timestamp.fromDate(date),
       'location': location,
-      'meritPointsProvided': meritPointsProvided,
-      'clubId': clubId,
+      'attendeeMeritPoints': attendeeMeritPoints,
+      'crewMeritPoints': crewMeritPoints,
       'createdBy': createdBy,
-      'qrCodeData': qrCodeData,
+      'attendeeQrCodeData': attendeeQrCodeData,
+      'crewQrCodeData': crewQrCodeData,
       'imageUrl': imageUrl,
       'maxCapacity': maxCapacity,
     };
@@ -49,10 +52,11 @@ class EventModel {
       description: map['description'] ?? '',
       date: (map['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
       location: map['location'] ?? '',
-      meritPointsProvided: map['meritPointsProvided'] ?? 0,
-      clubId: map['clubId'] ?? '',
+      attendeeMeritPoints: map['attendeeMeritPoints'] ?? 1,
+      crewMeritPoints: map['crewMeritPoints'] ?? 3,
       createdBy: map['createdBy'] ?? '',
-      qrCodeData: map['qrCodeData'] ?? '',
+      attendeeQrCodeData: map['attendeeQrCodeData'] ?? '',
+      crewQrCodeData: map['crewQrCodeData'] ?? '',
       imageUrl: map['imageUrl'],
       maxCapacity: map['maxCapacity'],
     );

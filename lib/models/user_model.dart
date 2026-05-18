@@ -5,7 +5,6 @@ class UserModel {
   final String kolej;
   final int meritPoints;
   final String role;
-  final String? clubId;
 
   UserModel({
     required this.uid,
@@ -14,7 +13,6 @@ class UserModel {
     required this.kolej,
     required this.meritPoints,
     required this.role,
-    this.clubId,
   });
 
   // Convert Dart object → Firestore
@@ -26,7 +24,6 @@ class UserModel {
       'kolej': kolej,
       'meritPoints': meritPoints,
       'role': role,
-      'clubId': clubId,
     };
   }
 
@@ -39,7 +36,6 @@ class UserModel {
       kolej: map['kolej'] ?? '',
       meritPoints: map['meritPoints'] ?? 0,
       role: map['role'] ?? 'student',
-      clubId: map['clubId'],
     );
   }
 }

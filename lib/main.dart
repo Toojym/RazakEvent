@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'viewmodels/auth_viewmodel.dart';
-import 'views/auth_view.dart';
+import 'views/root_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Firebase Auth',
+      title: 'RazakEvent',
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const AuthView(),
+      home: const RootView(),
     );
   }
 }
