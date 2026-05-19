@@ -2,16 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/event_model.dart';
 
 class EventRepository {
-  final _collection = FirebaseFirestore.instance.collection('events');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<List<Event>> watchEvents() {
-    return _collection
-        .orderBy('date', descending: false)
-        .snapshots()
-        .map((snapshot) =>
-        snapshot.docs.map((doc) => Event.fromFirestore(doc)).toList());
+  Future<void> createEvent(EventModel event) async {
+    await _firestore.collection('events').doc(event.eventId).set(event.toMap());
   }
 
-  Future<void> addEvent(Event event) => _collection.add(event.toMap());
-  Future<void> deleteEvent(String id) => _collection.doc(id).delete();
+  Future<List<EventModel>> getUpcomingEvents() async {
+    final snapshot = await _firestore
+        .collection('events')
+        .where('date', isGreaterThanOrEqualTo: Timestamp.now())
+        .orderBy('date')
+        .get();
+
+    return snapshot.docs
+        .map((doc) => EventModel.fromMap(doc.data(), doc.id))
+        .toList();
+  }
 }

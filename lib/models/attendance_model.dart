@@ -6,6 +6,7 @@ class AttendanceModel {
   final String userId;
   final DateTime scannedAt;
   final int pointsAwarded;
+  final String joinRole;
 
   AttendanceModel({
     required this.attendanceId,
@@ -13,6 +14,7 @@ class AttendanceModel {
     required this.userId,
     required this.scannedAt,
     required this.pointsAwarded,
+    required this.joinRole,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,6 +23,7 @@ class AttendanceModel {
       'userId': userId,
       'scannedAt': Timestamp.fromDate(scannedAt),
       'pointsAwarded': pointsAwarded,
+      'joinRole': joinRole,
     };
   }
 
@@ -31,6 +34,7 @@ class AttendanceModel {
       userId: map['userId'] ?? '',
       scannedAt: (map['scannedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       pointsAwarded: map['pointsAwarded'] ?? 0,
+      joinRole: map['joinRole'] ?? 'attendee',
     );
   }
 }

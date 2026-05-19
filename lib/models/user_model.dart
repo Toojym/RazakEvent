@@ -5,7 +5,7 @@ class UserModel {
   final String kolej;
   final int meritPoints;
   final String role;
-  final String? clubId;
+  final String email; // stored for matric-based login lookup
 
   UserModel({
     required this.uid,
@@ -14,23 +14,19 @@ class UserModel {
     required this.kolej,
     required this.meritPoints,
     required this.role,
-    this.clubId,
+    required this.email,
   });
 
-  // Convert Dart object → Firestore
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'name': name,
-      'matric': matric,
-      'kolej': kolej,
-      'meritPoints': meritPoints,
-      'role': role,
-      'clubId': clubId,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+    'uid': uid,
+    'name': name,
+    'matric': matric,
+    'kolej': kolej,
+    'meritPoints': meritPoints,
+    'role': role,
+    'email': email,
+  };
 
-  // Convert Firestore → Dart object
   factory UserModel.fromMap(Map<String, dynamic> map, String documentId) {
     return UserModel(
       uid: documentId,
@@ -39,7 +35,10 @@ class UserModel {
       kolej: map['kolej'] ?? '',
       meritPoints: map['meritPoints'] ?? 0,
       role: map['role'] ?? 'student',
-      clubId: map['clubId'],
+      email: map['email'] ?? '',
     );
   }
+
+  bool get isOrganizer => role == 'organizer';
+  bool get isStudent => role == 'student';
 }

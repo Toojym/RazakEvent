@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../repositories/user_repository.dart';
+import '../models/user_model.dart';
 
 class AuthViewModel extends ChangeNotifier {
+  final UserRepository _userRepository = UserRepository();
+
   bool _isLogin = true;
   bool _isLoading = false;
 
@@ -13,59 +17,124 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> authenticate(String email, String password) async {
+  // ── Validate UTM student email ────────────────────────────────────
+  String? _validateUTMEmail(String email) {
+    if (email.trim().isEmpty) return 'Please enter your UTM email.';
+    if (!email.trim().endsWith('@graduate.utm.my')) {
+      return 'Only @graduate.utm.my emails are allowed.';
+    }
+    return null;
+  }
+
+  // ── LOGIN ─────────────────────────────────────────────────────────
+  Future<String?> login(String email, String password) async {
+    final emailError = _validateUTMEmail(email);
+    if (emailError != null) return emailError;
+    if (password.trim().isEmpty) return 'Please enter your password.';
+
     _isLoading = true;
     notifyListeners();
-    String? errorMessage;
 
     try {
-      if (_isLogin) {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email.trim(),
-          password: password.trim(),
-        );
-      } else {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email.trim(),
-          password: password.trim(),
-        );
-      }
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password.trim(),
+      );
+      return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        errorMessage = "No user found for that email.";
-      } else if (e.code == 'wrong-password') {
-        errorMessage = "Wrong password.";
-      } else if (e.code == 'email-already-in-use') {
-        errorMessage = "Email already in use.";
-      } else if (e.code == 'weak-password') {
-        errorMessage = "Password is too weak.";
-      } else if (e.code == 'invalid-email') {
-        errorMessage = "Invalid email address.";
-      } else {
-        errorMessage = "Authentication failed.";
-      }
+      return _mapError(e.code);
+    } catch (_) {
+      return 'Login failed. Please try again.';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
-    return errorMessage; // null means success
   }
 
-  Future<String?> resetPassword(String email) async {
-    if (email.trim().isEmpty) {
-      return "Enter your email first to reset password.";
-    }
+  // ── SIGN UP ───────────────────────────────────────────────────────
+  Future<String?> signUp({
+    required String matric,
+    required String email,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    if (matric.trim().isEmpty)
+      return 'Please enter your matric / staff number.';
 
+    final emailError = _validateUTMEmail(email);
+    if (emailError != null) return emailError;
+
+    if (password.isEmpty) return 'Please enter a password.';
+    if (password.length < 6) return 'Password must be at least 6 characters.';
+    if (password != confirmPassword) return 'Passwords do not match.';
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: email.trim(),
+            password: password.trim(),
+          );
+
+      if (credential.user != null) {
+        await _userRepository.createUser(
+          UserModel(
+            uid: credential.user!.uid,
+            name: '',
+            matric: matric.trim().toUpperCase(),
+            kolej: 'Kolej Tun Razak',
+            meritPoints: 0,
+            role: 'student',
+            email: email.trim(),
+          ),
+        );
+      }
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return _mapError(e.code);
+    } catch (_) {
+      return 'Registration failed. Please try again.';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ── FORGOT PASSWORD ───────────────────────────────────────────────
+  Future<String?> resetPassword(String email) async {
+    final emailError = _validateUTMEmail(email);
+    if (emailError != null) return emailError;
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
       return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        return "No user found with that email.";
-      } else if (e.code == 'invalid-email') {
-        return "Invalid email address.";
-      }
-      return "Failed to send reset email.";
+      if (e.code == 'user-not-found')
+        return 'No account found with that email.';
+      return 'Failed to send reset email.';
+    }
+  }
+
+  String _mapError(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'No account found for this email.';
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'Incorrect password. Please try again.';
+      case 'email-already-in-use':
+        return 'An account with this email already exists.';
+      case 'weak-password':
+        return 'Password is too weak. Use at least 6 characters.';
+      case 'invalid-email':
+        return 'Invalid email address.';
+      case 'too-many-requests':
+        return 'Too many attempts. Please try again later.';
+      case 'network-request-failed':
+        return 'No internet connection.';
+      default:
+        return 'Authentication failed. Please try again.';
     }
   }
 }
