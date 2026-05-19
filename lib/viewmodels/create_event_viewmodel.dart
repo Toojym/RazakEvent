@@ -49,7 +49,7 @@ class CreateEventViewModel extends ChangeNotifier {
         imageUrl: imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim(),
       );
 
-      await _eventRepository.createEvent(event);
+      await _eventRepository.addEvent(event);
       return null;
     } catch (e) {
       return e.toString();
