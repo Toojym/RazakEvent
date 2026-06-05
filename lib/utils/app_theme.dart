@@ -11,11 +11,11 @@ class AppTheme {
   static const Color textHint = Color(0xFF9E9E9E);
   static const Color textDark = Color(0xFF212121);
 
-  // ── Background gradient (approximates the Figma texture) ───────
-  // To use the real texture instead:
-  //   1. Export the background from Figma as PNG → assets/images/bg_texture.png
-  //   2. Wrap your Scaffold body in a Stack and add:
-  //      Image.asset('assets/images/bg_texture.png', fit: BoxFit.cover)
+  // ── Background image asset path ─────────────────────────────────
+  // Place your background image at: assets/images/bg_texture.png
+  static const String backgroundImage = 'assets/images/bg_texture.png';
+
+  // ── Background gradient (fallback when no image asset exists) ───
   static const LinearGradient backgroundGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -27,6 +27,30 @@ class AppTheme {
       Color(0xFF0D0400), // almost black
     ],
     stops: [0.0, 0.2, 0.5, 0.75, 1.0],
+  );
+
+  /// Returns a BoxDecoration that uses the background image asset.
+  /// Falls back to the gradient if the image is not available.
+  static BoxDecoration get backgroundDecoration => const BoxDecoration(
+    image: DecorationImage(
+      image: AssetImage(backgroundImage),
+      fit: BoxFit.cover,
+    ),
+  );
+
+  static const String backgroundImage2 = 'assets/images/bg_texture2.png';
+
+  /// Returns a BoxDecoration that uses the secondary background image asset.
+  static BoxDecoration get backgroundDecoration2 => const BoxDecoration(
+    image: DecorationImage(
+      image: AssetImage(backgroundImage2),
+      fit: BoxFit.cover,
+    ),
+  );
+
+  /// Gradient-only fallback decoration.
+  static const BoxDecoration gradientDecoration = BoxDecoration(
+    gradient: backgroundGradient,
   );
 
   // ── MaterialApp ThemeData ──────────────────────────────────────

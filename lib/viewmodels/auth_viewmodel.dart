@@ -53,11 +53,16 @@ class AuthViewModel extends ChangeNotifier {
 
   // ── SIGN UP ───────────────────────────────────────────────────────
   Future<String?> signUp({
+    required String name,
     required String matric,
     required String email,
     required String password,
     required String confirmPassword,
   }) async {
+    if (name.trim().isEmpty) {
+      return 'Please enter your full name.';
+    }
+    
     if (matric.trim().isEmpty) {
       return 'Please enter your matric / staff number.';
     }
@@ -83,14 +88,17 @@ class AuthViewModel extends ChangeNotifier {
         await _userRepository.createUser(
           UserModel(
             uid: credential.user!.uid,
-            name: '',
+            name: name.trim(),
             matric: matric.trim().toUpperCase(),
             kolej: 'Kolej Tun Razak',
+            faculty: 'Faculty of Computing',
             meritPoints: 0,
             role: 'student',
             email: email.trim(),
           ),
         );
+        // Send the verification link
+        await credential.user!.sendEmailVerification();
       }
       return null;
     } on FirebaseAuthException catch (e) {

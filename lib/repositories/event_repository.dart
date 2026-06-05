@@ -34,4 +34,32 @@ class EventRepository {
 
   Future<void> addEvent(EventModel event) => _collection.add(event.toMap());
   Future<void> deleteEvent(String id) => _collection.doc(id).delete();
+
+  /// Looks up an event matching the scanned QR code.
+  /// Checks both attendee and crew QR code fields.
+  Future<EventModel?> findByQrCodeData(String qrData) async {
+    // Check if it matches an attendee QR code
+    final attendeeQuery = await _collection
+        .where('attendeeQrCodeData', isEqualTo: qrData)
+        .limit(1)
+        .get();
+
+    if (attendeeQuery.docs.isNotEmpty) {
+      final doc = attendeeQuery.docs.first;
+      return EventModel.fromMap(doc.data(), doc.id);
+    }
+
+    // Check if it matches a crew QR code
+    final crewQuery = await _collection
+        .where('crewQrCodeData', isEqualTo: qrData)
+        .limit(1)
+        .get();
+
+    if (crewQuery.docs.isNotEmpty) {
+      final doc = crewQuery.docs.first;
+      return EventModel.fromMap(doc.data(), doc.id);
+    }
+
+    return null;
+  }
 }

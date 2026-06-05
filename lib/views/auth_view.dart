@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../utils/app_theme.dart';
+import 'logo_view.dart';
 
 /// Auth View — Login and Sign Up screens.
 /// Matches the Figma design:
-///   - Dark orange/brown texture background
+///   - Full-screen background image (assets/images/bg_texture.png)
 ///   - "RazakEvent" logo above the card
-///   - White rounded card with form fields
+///   - White rounded card with form fields (vertically centred)
 ///   - Blue rounded action button
-///   - "Powered by Puzl" footer
+///   - "Powered by Puzi" footer
 class AuthView extends StatefulWidget {
   const AuthView({super.key});
 
@@ -19,6 +20,7 @@ class AuthView extends StatefulWidget {
 
 class _AuthViewState extends State<AuthView> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _matricController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -29,6 +31,7 @@ class _AuthViewState extends State<AuthView> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _matricController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -39,6 +42,7 @@ class _AuthViewState extends State<AuthView> {
   // ── Clear fields when switching between Login / Sign Up ──────────
   void _onToggleMode(AuthViewModel vm) {
     _formKey.currentState?.reset();
+    _nameController.clear();
     _matricController.clear();
     _emailController.clear();
     _passwordController.clear();
@@ -57,6 +61,7 @@ class _AuthViewState extends State<AuthView> {
       error = await vm.login(_emailController.text, _passwordController.text);
     } else {
       error = await vm.signUp(
+        name: _nameController.text,
         matric: _matricController.text,
         email: _emailController.text,
         password: _passwordController.text,
@@ -93,45 +98,40 @@ class _AuthViewState extends State<AuthView> {
     return Consumer<AuthViewModel>(
       builder: (context, vm, _) {
         return Scaffold(
+          // Prevent the background from resizing when keyboard appears
+          resizeToAvoidBottomInset: false,
           body: Container(
-            // Background gradient — replace with your Figma texture:
-            // decoration: BoxDecoration(
-            //   image: DecorationImage(
-            //     image: AssetImage('assets/images/bg_texture.png'),
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
-            decoration: const BoxDecoration(
-              gradient: AppTheme.backgroundGradient,
-            ),
+            width: double.infinity,
+            height: double.infinity,
+            decoration: AppTheme.backgroundDecoration,
             child: SafeArea(
               child: Column(
                 children: [
-                  // ── Scrollable content ───────────────────────
+                  // ── Scrollable centre content ──────────────────
                   Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 60),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // ── RazakEvent Logo ──────────────────
+                            const RazakEventLogo(fontSize: 30),
+                            const SizedBox(height: 32),
 
-                          // ── RazakEvent Logo ──────────────────
-                          _buildLogo(),
-                          const SizedBox(height: 40),
-
-                          // ── White form card ──────────────────
-                          _buildCard(vm),
-                          const SizedBox(height: 40),
-                        ],
+                            // ── White form card ──────────────────
+                            _buildCard(vm),
+                          ],
+                        ),
                       ),
                     ),
                   ),
 
-                  // ── "Powered by Puzl" footer ─────────────────
+                  // ── "Powered by Puzi" footer ─────────────────
                   const Padding(
                     padding: EdgeInsets.only(bottom: 20),
                     child: Text(
-                      'Powered by Puzl',
+                      'Powered by Puzi',
                       style: TextStyle(
                         color: Colors.white54,
                         fontSize: 12,
@@ -148,34 +148,6 @@ class _AuthViewState extends State<AuthView> {
     );
   }
 
-  // ── Logo ─────────────────────────────────────────────────────────
-  Widget _buildLogo() {
-    return RichText(
-      text: const TextSpan(
-        children: [
-          TextSpan(
-            text: 'Razak',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 0.5,
-            ),
-          ),
-          TextSpan(
-            text: 'Event',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // ── White card ───────────────────────────────────────────────────
   Widget _buildCard(AuthViewModel vm) {
     return Container(
@@ -185,7 +157,7 @@ class _AuthViewState extends State<AuthView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -196,10 +168,32 @@ class _AuthViewState extends State<AuthView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── UTM Email (both Login and Sign Up) ───────────
-            _buildField(
+            // ── Full Name (Sign Up only) ────
+            if (!vm.isLogin) ...[
+              _buildLabeledField(
+                label: 'Full Name',
+                controller: _nameController,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Please enter your full name'
+                    : null,
+              ),
+              const SizedBox(height: 14),
+
+              // ── Student Matrics / Staff No. (Sign Up only) ────
+              _buildLabeledField(
+                label: 'Student Matrics / Staff No.',
+                controller: _matricController,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Please enter your matric / staff number'
+                    : null,
+              ),
+              const SizedBox(height: 14),
+            ],
+
+            // ── UTM Email (both modes — login uses this) ─────
+            _buildLabeledField(
+              label: 'UTM Email',
               controller: _emailController,
-              hint: vm.isLogin ? 'UTM Email' : 'UTM Email',
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
                 if (v == null || v.trim().isEmpty) {
@@ -211,24 +205,12 @@ class _AuthViewState extends State<AuthView> {
                 return null;
               },
             ),
-            const SizedBox(height: 12),
-
-            // ── Matric / Staff No. (Sign Up only) ────────────
-            if (!vm.isLogin) ...[
-              _buildField(
-                controller: _matricController,
-                hint: 'Student Matrics / Staff No.',
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Please enter your matric / staff number'
-                    : null,
-              ),
-              const SizedBox(height: 12),
-            ],
 
             // ── Password ────────────────────────────────────
-            _buildField(
+            const SizedBox(height: 14),
+            _buildLabeledField(
+              label: 'Password',
               controller: _passwordController,
-              hint: 'Password',
               obscure: _obscurePassword,
               onToggleObscure: () =>
                   setState(() => _obscurePassword = !_obscurePassword),
@@ -240,13 +222,13 @@ class _AuthViewState extends State<AuthView> {
                 return null;
               },
             ),
-            const SizedBox(height: 12),
 
             // ── Confirm Password (Sign Up only) ──────────────
             if (!vm.isLogin) ...[
-              _buildField(
+              const SizedBox(height: 14),
+              _buildLabeledField(
+                label: 'Confirm Password',
                 controller: _confirmPassController,
-                hint: 'Confirm Password',
                 obscure: _obscureConfirmPassword,
                 onToggleObscure: () => setState(
                   () => _obscureConfirmPassword = !_obscureConfirmPassword,
@@ -261,38 +243,40 @@ class _AuthViewState extends State<AuthView> {
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
             ],
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
 
             // ── Action button ────────────────────────────────
-            SizedBox(
-              height: 46,
-              child: ElevatedButton(
-                onPressed: vm.isLoading ? null : () => _submit(vm),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+            Center(
+              child: SizedBox(
+                width: 140,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: vm.isLoading ? null : () => _submit(vm),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                   ),
+                  child: vm.isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          vm.isLogin ? 'Login' : 'Sign Up',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
-                child: vm.isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Text(
-                        vm.isLogin ? 'Login' : 'Sign Up',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
               ),
             ),
 
@@ -331,64 +315,79 @@ class _AuthViewState extends State<AuthView> {
     );
   }
 
-  // ── Reusable form field ───────────────────────────────────────────
-  Widget _buildField({
+  // ── Reusable form field with label above ──────────────────────────
+  Widget _buildLabeledField({
+    required String label,
     required TextEditingController controller,
-    required String hint,
     bool obscure = false,
     VoidCallback? onToggleObscure,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      keyboardType: keyboardType,
-      validator: validator,
-      style: const TextStyle(fontSize: 14, color: AppTheme.textDark),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: AppTheme.textHint, fontSize: 14),
-        filled: true,
-        fillColor: Colors.white,
-        isDense: true,
-        suffixIcon: onToggleObscure != null
-            ? IconButton(
-                icon: Icon(
-                  obscure
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: AppTheme.textHint,
-                  size: 20,
-                ),
-                onPressed: onToggleObscure,
-              )
-            : null,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppTheme.textDark,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFDDDDDD)),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          obscureText: obscure,
+          keyboardType: keyboardType,
+          validator: validator,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 14, color: AppTheme.textDark),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            isDense: true,
+            suffixIcon: onToggleObscure != null
+                ? IconButton(
+                    icon: Icon(
+                      obscure
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: AppTheme.textHint,
+                      size: 20,
+                    ),
+                    onPressed: onToggleObscure,
+                  )
+                : null,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFDDDDDD)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFDDDDDD)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  const BorderSide(color: AppTheme.primaryBlue, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.redAccent),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  const BorderSide(color: Colors.redAccent, width: 1.5),
+            ),
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFDDDDDD)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-        ),
-      ),
+      ],
     );
   }
 }

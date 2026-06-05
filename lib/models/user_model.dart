@@ -3,6 +3,7 @@ class UserModel {
   final String name;
   final String matric;
   final String kolej;
+  final String faculty;
   final int meritPoints;
   final String role;
   final String email; // stored for matric-based login lookup
@@ -12,6 +13,7 @@ class UserModel {
     required this.name,
     required this.matric,
     required this.kolej,
+    this.faculty = 'Faculty of Computing',
     required this.meritPoints,
     required this.role,
     required this.email,
@@ -22,6 +24,7 @@ class UserModel {
     'name': name,
     'matric': matric,
     'kolej': kolej,
+    'faculty': faculty,
     'meritPoints': meritPoints,
     'role': role,
     'email': email,
@@ -33,6 +36,7 @@ class UserModel {
       name: map['name'] ?? '',
       matric: map['matric'] ?? '',
       kolej: map['kolej'] ?? '',
+      faculty: map['faculty'] ?? 'Faculty of Computing',
       meritPoints: map['meritPoints'] ?? 0,
       role: map['role'] ?? 'student',
       email: map['email'] ?? '',

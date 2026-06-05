@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
-import '../models/date_filter.dart';
 import '../viewmodels/event_viewmodel.dart';
 
 class EventListView extends StatelessWidget {
@@ -167,10 +166,7 @@ class _FilterBar extends StatelessWidget {
       context: context,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
-      builder: (context, child) => Theme(
-        data: ThemeData.dark(),
-        child: child!,
-      ),
+      builder: (context, child) => Theme(data: ThemeData.dark(), child: child!),
     );
     if (picked != null) {
       vm.filterByRange(from: picked.start, to: picked.end);
@@ -203,15 +199,15 @@ class _EventCard extends StatelessWidget {
               ),
               image: event.imageUrl != null
                   ? DecorationImage(
-                image: NetworkImage(event.imageUrl!),
-                fit: BoxFit.cover,
-              )
+                      image: NetworkImage(event.imageUrl!),
+                      fit: BoxFit.cover,
+                    )
                   : null,
             ),
             child: event.imageUrl == null
                 ? const Center(
-              child: Icon(Icons.event, color: Colors.white24, size: 48),
-            )
+                    child: Icon(Icons.event, color: Colors.white24, size: 48),
+                  )
                 : null,
           ),
           // Event details
@@ -231,26 +227,36 @@ class _EventCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today,
-                        color: Colors.white38, size: 13),
+                    const Icon(
+                      Icons.calendar_today,
+                      color: Colors.white38,
+                      size: 13,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       _formatDate(event.date),
                       style: const TextStyle(
-                          color: Colors.white54, fontSize: 12),
+                        color: Colors.white54,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.location_on,
-                        color: Colors.white38, size: 13),
+                    const Icon(
+                      Icons.location_on,
+                      color: Colors.white38,
+                      size: 13,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       event.location,
                       style: const TextStyle(
-                          color: Colors.white54, fontSize: 12),
+                        color: Colors.white54,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -261,8 +267,7 @@ class _EventCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${event.attendeeMeritPoints} merit pts',
-                      style: const TextStyle(
-                          color: Colors.amber, fontSize: 12),
+                      style: const TextStyle(color: Colors.amber, fontSize: 12),
                     ),
                   ],
                 ),
@@ -276,8 +281,18 @@ class _EventCard extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year} · '
         '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';

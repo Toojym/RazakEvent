@@ -42,4 +42,19 @@ class UserRepository {
       return null;
     }
   }
+
+  // ── Calculate the user's leaderboard rank ──────────────────────────
+  Future<int> getUserRank(int userMeritPoints) async {
+    try {
+      final countQuery = await _firestore
+          .collection('users')
+          .where('meritPoints', isGreaterThan: userMeritPoints)
+          .count()
+          .get();
+          
+      return (countQuery.count ?? 0) + 1;
+    } catch (_) {
+      return 0; // Return 0 or handle error if needed
+    }
+  }
 }

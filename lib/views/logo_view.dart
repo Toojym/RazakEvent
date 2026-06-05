@@ -6,9 +6,9 @@ import 'root_view.dart';
 
 /// Logo Screen — shown for 2.5 seconds on app launch.
 /// Matches the Figma "Logo Screen" design:
-///   - Dark orange/brown texture background
+///   - Full-screen background image (assets/images/bg_texture.png)
 ///   - "RazakEvent" centred logo
-///   - "Powered by Puzl" footer
+///   - "Powered by Puzi" footer
 class LogoScreen extends StatefulWidget {
   const LogoScreen({super.key});
 
@@ -50,9 +50,9 @@ class _LogoScreenState extends State<LogoScreen>
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, _, _) => const RootView(),
+          pageBuilder: (_, __, ___) => const RootView(),
           transitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (_, animation, _, child) =>
+          transitionsBuilder: (_, animation, __, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
       );
@@ -69,32 +69,29 @@ class _LogoScreenState extends State<LogoScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        // Background gradient approximating the Figma texture.
-        // Replace with Image.asset('assets/images/bg_texture.png')
-        // if you export the texture from Figma.
-        decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
-        child: SafeArea(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: Column(
-              children: [
-                // ── Logo — centred vertically ──────────────────
-                const Expanded(child: Center(child: RazakEventLogo())),
+        width: double.infinity,
+        height: double.infinity,
+        decoration: AppTheme.backgroundDecoration,
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            children: [
+              // ── Logo — centred vertically ──────────────────
+              const Expanded(child: Center(child: RazakEventLogo())),
 
-                // ── "Powered by Puzl" footer ───────────────────
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 24),
-                  child: Text(
-                    'Powered by Puzl',
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 12,
-                      letterSpacing: 0.5,
-                    ),
+              // ── "Powered by Puzi" footer ───────────────────
+              const Padding(
+                padding: EdgeInsets.only(bottom: 32),
+                child: Text(
+                  'Powered by Puzi',
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontSize: 12,
+                    letterSpacing: 0.5,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
