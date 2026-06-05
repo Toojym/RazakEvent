@@ -202,8 +202,9 @@ class _AuthViewState extends State<AuthView> {
               hint: vm.isLogin ? 'UTM Email' : 'UTM Email',
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
-                if (v == null || v.trim().isEmpty)
+                if (v == null || v.trim().isEmpty) {
                   return 'Please enter your UTM email';
+                }
                 if (!v.trim().endsWith('@graduate.utm.my')) {
                   return 'Only @graduate.utm.my emails are allowed';
                 }
@@ -251,10 +252,12 @@ class _AuthViewState extends State<AuthView> {
                   () => _obscureConfirmPassword = !_obscureConfirmPassword,
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty)
+                  if (v == null || v.isEmpty) {
                     return 'Please confirm your password';
-                  if (v != _passwordController.text)
+                  }
+                  if (v != _passwordController.text) {
                     return 'Passwords do not match';
+                  }
                   return null;
                 },
               ),

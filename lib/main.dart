@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'viewmodels/auth_viewmodel.dart';
 import 'views/logo_view.dart';
-import 'views/root_view.dart';
 import 'utils/app_theme.dart';
 
 void main() async {

@@ -58,8 +58,9 @@ class AuthViewModel extends ChangeNotifier {
     required String password,
     required String confirmPassword,
   }) async {
-    if (matric.trim().isEmpty)
+    if (matric.trim().isEmpty) {
       return 'Please enter your matric / staff number.';
+    }
 
     final emailError = _validateUTMEmail(email);
     if (emailError != null) return emailError;
@@ -110,8 +111,9 @@ class AuthViewModel extends ChangeNotifier {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
       return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found')
+      if (e.code == 'user-not-found') {
         return 'No account found with that email.';
+      }
       return 'Failed to send reset email.';
     }
   }

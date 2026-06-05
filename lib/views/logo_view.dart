@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../utils/app_theme.dart';
-import 'auth_view.dart';
 import 'root_view.dart';
 
 /// Logo Screen — shown for 2.5 seconds on app launch.
@@ -51,9 +50,9 @@ class _LogoScreenState extends State<LogoScreen>
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder:     (_, __, ___) => const RootView(),
+          pageBuilder: (_, _, _) => const RootView(),
           transitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (_, animation, __, child) =>
+          transitionsBuilder: (_, animation, _, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
       );
@@ -80,7 +79,7 @@ class _LogoScreenState extends State<LogoScreen>
             child: Column(
               children: [
                 // ── Logo — centred vertically ──────────────────
-                const Expanded(child: Center(child: _RazakEventLogo())),
+                const Expanded(child: Center(child: RazakEventLogo())),
 
                 // ── "Powered by Puzl" footer ───────────────────
                 const Padding(
@@ -104,8 +103,8 @@ class _LogoScreenState extends State<LogoScreen>
 }
 
 // ── Shared logo widget — used on all three screens ─────────────────────────
-class _RazakEventLogo extends StatelessWidget {
-  const _RazakEventLogo({this.fontSize = 32});
+class RazakEventLogo extends StatelessWidget {
+  const RazakEventLogo({super.key, this.fontSize = 32});
   final double fontSize;
 
   @override
