@@ -13,7 +13,7 @@ class AppTheme {
 
   // ── Background image asset path ─────────────────────────────────
   // Place your background image at: assets/images/bg_texture.png
-  static const String backgroundImage = 'assets/images/bg_texture.png';
+  static const String backgroundImage = 'assets/images/bg_texture.webp';
 
   // ── Background gradient (fallback when no image asset exists) ───
   static const LinearGradient backgroundGradient = LinearGradient(
@@ -38,7 +38,7 @@ class AppTheme {
     ),
   );
 
-  static const String backgroundImage2 = 'assets/images/bg_texture2.png';
+  static const String backgroundImage2 = 'assets/images/bg_texture2.webp';
 
   /// Returns a BoxDecoration that uses the secondary background image asset.
   static BoxDecoration get backgroundDecoration2 => const BoxDecoration(
