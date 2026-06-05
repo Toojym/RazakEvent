@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
 import '../viewmodels/home_viewmodel.dart';
+import 'event_detail_view.dart';
 
 // ════════════════════════════════════════════════════════════════════
 // HOME VIEW
@@ -237,7 +238,10 @@ class _BannerEventInfo extends StatelessWidget {
         // "Join Us!" button
         ElevatedButton(
           onPressed: () {
-            // TODO: navigate to EventDetailView(event)
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => EventDetailView(event: event)),
+            );
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2E6BE6),
@@ -473,9 +477,10 @@ class _EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Navigator.push(context, MaterialPageRoute(
-        //   builder: (_) => EventDetailView(event: event),
-        // ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => EventDetailView(event: event)),
+        );
       },
       child: Container(
         width: 140,
