@@ -6,6 +6,7 @@ import '../viewmodels/profile_viewmodel.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/attendance_repository.dart';
 import 'logo_view.dart';
+import 'leaderboard_view.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -86,7 +87,11 @@ class _ProfileViewBody extends StatelessWidget {
                           // ── Leaderboard Button ──────────────────────────────
                           ElevatedButton(
                             onPressed: () {
-                              // TODO: Navigate to leaderboard view
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const LeaderboardView(),
+                                ),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primaryBlue,
