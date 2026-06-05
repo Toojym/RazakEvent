@@ -57,4 +57,34 @@ class UserRepository {
       return 0; // Return 0 or handle error if needed
     }
   }
+
+  // ── Atomically add merit points to a user's profile ───────────────
+  /// Uses [FieldValue.increment] so concurrent scans never overwrite
+  /// each other. If the `meritPoints` field doesn't exist yet on the
+  /// document, Firestore treats the missing value as 0 and creates it.
+  Future<void> addMeritPoints({
+    required String uid,
+    required int points,
+  }) async {
+    await _firestore.collection('users').doc(uid).set(
+      {'meritPoints': FieldValue.increment(points)},
+      SetOptions(merge: true),
+    );
+  }
+
+  // ── Real-time leaderboard stream ──────────────────────────────────
+  /// Returns a live stream of users sorted by [meritPoints] descending.
+  /// Any Firestore write (e.g. from [addMeritPoints]) immediately pushes
+  /// an updated snapshot through this stream, ensuring instant UI updates.
+  Stream<List<UserModel>> watchLeaderboard({int limit = 10}) {
+    return _firestore
+        .collection('users')
+        .orderBy('meritPoints', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) =>
+                UserModel.fromMap(doc.data(), doc.id))
+            .toList());
+  }
 }

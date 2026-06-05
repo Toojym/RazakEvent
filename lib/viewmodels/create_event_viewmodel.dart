@@ -20,6 +20,7 @@ class CreateEventViewModel extends ChangeNotifier {
     required int crewMeritPoints,
     int? maxCapacity,
     String? imageUrl,
+    required String category,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -47,6 +48,7 @@ class CreateEventViewModel extends ChangeNotifier {
         crewQrCodeData: crewQrCodeData,
         maxCapacity: maxCapacity,
         imageUrl: imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim(),
+        category: category,
       );
 
       await _eventRepository.addEvent(event);
