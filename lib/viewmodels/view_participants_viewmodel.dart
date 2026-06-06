@@ -80,6 +80,7 @@ class ViewParticipantsViewModel extends ChangeNotifier {
       _participants = loadedParticipants;
     } catch (e) {
       _errorMessage = 'Failed to load participants: $e';
+      debugPrint('Error loading participants: $e');
     } finally {
       _isLoading = false;
       if (!_isDisposed) notifyListeners();

@@ -34,7 +34,7 @@ class EventDetailViewModel extends ChangeNotifier {
       try {
         _isRegistered = await _registrationRepo.hasRegistered(event.eventId, user.uid);
       } catch (e) {
-        // ignore
+        debugPrint('Error checking registration status: $e');
       }
     }
     _isLoading = false;
@@ -73,6 +73,7 @@ class EventDetailViewModel extends ChangeNotifier {
       _isRegistered = true;
     } catch (e) {
       _errorMessage = 'Failed to register: $e';
+      debugPrint('Registration error: $e');
     } finally {
       _isLoading = false;
       if (!_isDisposed) notifyListeners();

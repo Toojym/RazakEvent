@@ -47,11 +47,21 @@ class RegistrationRepository {
     final query = await _firestore
         .collection('registrations')
         .where('eventId', isEqualTo: eventId)
-        .orderBy('registeredAt', descending: true)
         .get();
 
-    return query.docs
+    final results = query.docs
         .map((doc) => RegistrationModel.fromMap(doc.data(), doc.id))
         .toList();
+    results.sort((a, b) => b.registeredAt.compareTo(a.registeredAt));
+    return results;
+  }
+
+  Future<int> getRegistrationCount(String userId) async {
+    final query = await _firestore
+        .collection('registrations')
+        .where('userId', isEqualTo: userId)
+        .count()
+        .get();
+    return query.count ?? 0;
   }
 }

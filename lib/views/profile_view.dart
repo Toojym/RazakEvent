@@ -147,6 +147,52 @@ class _ProfileViewBody extends StatelessWidget {
                               ],
                             ),
                           ),
+                          const SizedBox(height: 16),
+
+                          // ── Events Registered Card ────────────────────────
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color:
+                                        Colors.white.withValues(alpha: 0.2),
+                                    width: 0.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'Events\nRegistered',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.2,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${vm.eventsRegistered}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 42,
+                                        fontWeight: FontWeight.w300,
+                                        height: 1.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 48),
 
                           // ── Footer ──────────────────────────────────────────

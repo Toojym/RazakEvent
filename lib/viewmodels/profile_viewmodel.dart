@@ -3,16 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/attendance_repository.dart';
+import '../repositories/registration_repository.dart';
 
 class ProfileViewModel extends ChangeNotifier {
   final UserRepository _userRepo;
   final AttendanceRepository _attendanceRepo;
+  final RegistrationRepository _registrationRepo;
 
   ProfileViewModel({
     required UserRepository userRepo,
     required AttendanceRepository attendanceRepo,
+    RegistrationRepository? registrationRepo,
   })  : _userRepo = userRepo,
-        _attendanceRepo = attendanceRepo {
+        _attendanceRepo = attendanceRepo,
+        _registrationRepo = registrationRepo ?? RegistrationRepository() {
     _loadProfileData();
   }
 
@@ -35,6 +39,9 @@ class ProfileViewModel extends ChangeNotifier {
 
   int _eventsParticipated = 0;
   int get eventsParticipated => _eventsParticipated;
+
+  int _eventsRegistered = 0;
+  int get eventsRegistered => _eventsRegistered;
 
   int _eventsVolunteered = 0;
   int get eventsVolunteered => _eventsVolunteered;
@@ -70,6 +77,12 @@ class ProfileViewModel extends ChangeNotifier {
           _eventsVolunteered = await _attendanceRepo.getVolunteeredCount(uid);
         } catch (e) {
           debugPrint('Error getting volunteered count: $e');
+        }
+
+        try {
+          _eventsRegistered = await _registrationRepo.getRegistrationCount(uid);
+        } catch (e) {
+          debugPrint('Error getting registration count: $e');
         }
 
         // Rank calculation
