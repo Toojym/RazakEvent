@@ -14,6 +14,7 @@ import 'logo_view.dart';
 /// - "Merits Leaderboard" section title
 /// - Podium: #1 centred on top, #2 left, #3 right (glassmorphic cards)
 /// - Scrollable list of ranks #4–#10 with dividers
+/// - Current user row highlighted with a blue background bar
 class LeaderboardView extends StatelessWidget {
   const LeaderboardView({super.key});
 
@@ -34,73 +35,105 @@ class _LeaderboardBody extends StatelessWidget {
     final vm = context.watch<LeaderboardViewModel>();
 
     return Scaffold(
-      body: Container(
-        decoration: AppTheme.backgroundDecoration2,
-        child: SafeArea(
-          bottom: false,
-          child: vm.isLoading
-              ? const Center(
-                  child:
-                      CircularProgressIndicator(color: AppTheme.primaryBlue),
-                )
-              : vm.errorMessage != null
-                  ? Center(
-                      child: Text(
-                        vm.errorMessage!,
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(bottom: 100),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 24),
+      body: Stack(
+        children: [
+          // ── Full-screen background ────────────────────────────
+          Positioned.fill(
+            child: Container(decoration: AppTheme.backgroundDecoration2),
+          ),
 
-                          // ── Header ──────────────────────────────
-                          const Center(
-                              child: RazakEventLogo(fontSize: 24)),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'My Profile',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          const SizedBox(height: 28),
+          // ── Gradient overlay to darken the lower portion ──────
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.transparent,
+                    const Color(0xFF0D0400).withValues(alpha: 0.75),
+                    const Color(0xFF0D0400),
+                  ],
+                  stops: const [0.0, 0.40, 0.65, 1.0],
+                ),
+              ),
+            ),
+          ),
 
-                          // ── Section Title ───────────────────────
-                          const Text(
-                            'Merits Leaderboard',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // ── Podium ──────────────────────────────
-                          _buildPodium(vm),
-                          const SizedBox(height: 28),
-
-                          // ── Remaining list (#4–#10) ─────────────
-                          if (vm.remainingUsers.isNotEmpty)
-                            _buildRemainingList(vm),
-                        ],
-                      ),
-                    ),
-        ),
+          // ── Content ───────────────────────────────────────────
+          SafeArea(
+            bottom: false,
+            child: _buildContent(vm),
+          ),
+        ],
       ),
     );
   }
 
-  // ── Podium: #1 top-centre, #2 bottom-left, #3 bottom-right ──────
+  Widget _buildContent(LeaderboardViewModel vm) {
+    if (vm.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+      );
+    }
+
+    if (vm.errorMessage != null) {
+      return Center(
+        child: Text(
+          vm.errorMessage!,
+          style: const TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 100),
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+
+          // ── Header ──────────────────────────────────────
+          const Center(child: RazakEventLogo(fontSize: 24)),
+          const SizedBox(height: 4),
+          const Text(
+            'My Profile',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          // ── Section Title ─────────────────────────────────
+          const Text(
+            'Merits Leaderboard',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // ── Podium ──────────────────────────────────────────
+          _buildPodium(vm),
+          const SizedBox(height: 28),
+
+          // ── Remaining list (#4–#10) ─────────────────────────
+          if (vm.remainingUsers.isNotEmpty) _buildRemainingList(vm),
+        ],
+      ),
+    );
+  }
+
+  // ── Podium: #1 top-centre, #2 bottom-left, #3 bottom-right ────
   Widget _buildPodium(LeaderboardViewModel vm) {
     final podium = vm.podiumUsers;
+
     if (podium.isEmpty) {
       return const SizedBox(
         height: 200,
@@ -121,7 +154,7 @@ class _LeaderboardBody extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          // ── #1 card (centred, large) ─────────────────────────
+          // ── #1 card (centred, tallest) ─────────────────────
           if (first != null)
             _PodiumCard(
               rank: 1,
@@ -130,7 +163,7 @@ class _LeaderboardBody extends StatelessWidget {
             ),
           const SizedBox(height: 12),
 
-          // ── #2 and #3 side by side ──────────────────────────
+          // ── #2 and #3 side by side ────────────────────────
           Row(
             children: [
               if (second != null)
@@ -161,7 +194,7 @@ class _LeaderboardBody extends StatelessWidget {
     );
   }
 
-  // ── List of ranks #4+ ──────────────────────────────────────────────
+  // ── List of ranks #4+ ──────────────────────────────────────────
   Widget _buildRemainingList(LeaderboardViewModel vm) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -173,13 +206,24 @@ class _LeaderboardBody extends StatelessWidget {
 
           return Column(
             children: [
+              // ── Divider ──────────────────────────────────────
               Divider(
                 color: Colors.white.withValues(alpha: 0.12),
                 height: 1,
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 14),
+
+              // ── Row (with highlight bar for current user) ────
+              Container(
+                decoration: isCurrentUser
+                    ? BoxDecoration(
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.35),
+                        borderRadius: BorderRadius.circular(6),
+                      )
+                    : null,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 4,
+                ),
                 child: Row(
                   children: [
                     // Rank number
@@ -189,13 +233,14 @@ class _LeaderboardBody extends StatelessWidget {
                         '# $rank',
                         style: TextStyle(
                           color: isCurrentUser
-                              ? AppTheme.primaryBlue
+                              ? Colors.white
                               : Colors.white70,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
+
                     // User name
                     Expanded(
                       child: Text(
@@ -238,24 +283,23 @@ class _PodiumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // #1 is taller than #2 and #3
     final isFirst = rank == 1;
-    final cardHeight = isFirst ? 140.0 : 120.0;
+    final cardHeight = isFirst ? 150.0 : 130.0;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
           height: cardHeight,
           decoration: BoxDecoration(
             color: isCurrentUser
-                ? AppTheme.primaryBlue.withValues(alpha: 0.15)
-                : Colors.white.withValues(alpha: 0.06),
+                ? AppTheme.primaryBlue.withValues(alpha: 0.18)
+                : Colors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isCurrentUser
-                  ? AppTheme.primaryBlue.withValues(alpha: 0.4)
+                  ? AppTheme.primaryBlue.withValues(alpha: 0.45)
                   : Colors.white.withValues(alpha: 0.15),
               width: 0.5,
             ),
@@ -269,15 +313,16 @@ class _PodiumCard extends StatelessWidget {
                   '#$rank',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: isFirst ? 48 : 36,
+                    fontSize: isFirst ? 52 : 40,
                     fontWeight: FontWeight.bold,
                     height: 1.0,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
+
                 // User name
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: Text(
                     user.name.isNotEmpty ? user.name : 'Unknown',
                     textAlign: TextAlign.center,

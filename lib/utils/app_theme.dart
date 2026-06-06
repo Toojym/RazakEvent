@@ -39,11 +39,20 @@ class AppTheme {
   );
 
   static const String backgroundImage2 = 'assets/images/bg_texture2.webp';
+  static const String backgroundImage3 = 'assets/images/bg_texture3.webp';
 
   /// Returns a BoxDecoration that uses the secondary background image asset.
   static BoxDecoration get backgroundDecoration2 => const BoxDecoration(
     image: DecorationImage(
       image: AssetImage(backgroundImage2),
+      fit: BoxFit.cover,
+    ),
+  );
+
+  /// Returns a BoxDecoration that uses the tertiary background image asset.
+  static BoxDecoration get backgroundDecoration3 => const BoxDecoration(
+    image: DecorationImage(
+      image: AssetImage(backgroundImage3),
       fit: BoxFit.cover,
     ),
   );

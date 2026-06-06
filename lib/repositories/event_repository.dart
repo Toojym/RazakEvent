@@ -33,6 +33,7 @@ class EventRepository {
   }
 
   Future<void> addEvent(EventModel event) => _collection.add(event.toMap());
+  Future<void> updateEvent(EventModel event) => _collection.doc(event.eventId).update(event.toMap());
   Future<void> deleteEvent(String id) => _collection.doc(id).delete();
 
   /// Looks up an event matching the scanned QR code.
@@ -61,5 +62,23 @@ class EventRepository {
     }
 
     return null;
+  }
+
+  Future<EventModel?> getEvent(String eventId) async {
+    final doc = await _collection.doc(eventId).get();
+    if (doc.exists) {
+      return EventModel.fromMap(doc.data()!, doc.id);
+    }
+    return null;
+  }
+
+  Future<List<EventModel>> getEventsByOrganizer(String organizerId) async {
+    final query = await _collection.where('createdBy', isEqualTo: organizerId).get();
+    return query.docs.map((doc) => EventModel.fromMap(doc.data(), doc.id)).toList();
+  }
+
+  Future<List<EventModel>> getAllEvents() async {
+    final query = await _collection.get();
+    return query.docs.map((doc) => EventModel.fromMap(doc.data(), doc.id)).toList();
   }
 }

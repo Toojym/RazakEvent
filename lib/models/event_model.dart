@@ -24,6 +24,9 @@ class EventModel {
   final String attendeeQrCodeData;
   final String crewQrCodeData;
   final String? imageUrl;
+  final String? posterUrl;
+  final String? headerUrl;
+  final bool hasPaperwork;
   final int? maxCapacity;
   final String category; // Sports | Academic | Arts | Cultural | Other
 
@@ -39,6 +42,9 @@ class EventModel {
     required this.attendeeQrCodeData,
     required this.crewQrCodeData,
     this.imageUrl,
+    this.posterUrl,
+    this.headerUrl,
+    this.hasPaperwork = false,
     this.maxCapacity,
     this.category = 'Other',
   });
@@ -54,6 +60,9 @@ class EventModel {
     'attendeeQrCodeData': attendeeQrCodeData,
     'crewQrCodeData': crewQrCodeData,
     'imageUrl': imageUrl,
+    'posterUrl': posterUrl,
+    'headerUrl': headerUrl,
+    'hasPaperwork': hasPaperwork,
     'maxCapacity': maxCapacity,
     'category': category,
   };
@@ -71,6 +80,9 @@ class EventModel {
       attendeeQrCodeData: map['attendeeQrCodeData'] ?? '',
       crewQrCodeData: map['crewQrCodeData'] ?? '',
       imageUrl: map['imageUrl'],
+      posterUrl: map['posterUrl'],
+      headerUrl: map['headerUrl'],
+      hasPaperwork: map['hasPaperwork'] ?? false,
       maxCapacity: map['maxCapacity'],
       category: map['category'] ?? 'Other',
     );

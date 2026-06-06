@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import '../repositories/event_repository.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'home_view.dart';
+import 'organizer_home_view.dart';
 import 'scan_view.dart';
 import 'create_event_view.dart';
 import 'profile_view.dart';
+import 'organizer_profile_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../repositories/user_repository.dart';
 import '../models/user_model.dart';
@@ -23,6 +25,7 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   int _currentIndex = 0;
   UserModel? _user;
+  bool _isLoadingUser = true;
 
   @override
   void initState() {
@@ -38,17 +41,37 @@ class _MainViewState extends State<MainView> {
   }
 
   Future<void> _loadUser() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid != null) {
-      final user = await UserRepository().getUser(uid);
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        final user = await UserRepository().getUser(uid);
+        if (mounted) {
+          setState(() {
+            _user = user;
+            _isLoadingUser = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() => _isLoadingUser = false);
+        }
+      }
+    } catch (e) {
       if (mounted) {
-        setState(() => _user = user);
+        setState(() => _isLoadingUser = false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingUser) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF0A0A0A),
+        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
+    }
+
     final bool isOrganizer = _user?.isOrganizer ?? false;
 
     return ChangeNotifierProvider(
@@ -60,11 +83,11 @@ class _MainViewState extends State<MainView> {
           // IndexedStack keeps all tabs alive (preserves scroll position)
           index: _currentIndex,
           children: [
-            const HomeView(),
+            isOrganizer ? const OrganizerHomeView() : const HomeView(),
             isOrganizer 
                 ? const CreateEventView() 
                 : ScanView(onGoHome: () => setState(() => _currentIndex = 0)),
-            const ProfileView(),
+            isOrganizer ? const OrganizerProfileView() : const ProfileView(),
           ],
         ),
         bottomNavigationBar: _BottomNavBar(

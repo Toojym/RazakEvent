@@ -250,17 +250,66 @@ class _CreateEventViewState extends State<CreateEventView> {
                               ),
                               _FormRow(
                                 label: 'Upload Paperwork',
-                                child: Container(
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: const Center(
-                                    child: Icon(Icons.upload_outlined, color: Colors.black),
+                                alignTop: true,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('File picker coming soon!')),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: const Center(
+                                      child: Icon(Icons.upload_outlined, color: Colors.black),
+                                    ),
                                   ),
                                 ),
+                              ),
+                              _FormRow(
+                                label: 'Upload Event Poster',
                                 alignTop: true,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Image picker coming soon!')),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: const Center(
+                                      child: Icon(Icons.image_outlined, color: Colors.black),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              _FormRow(
+                                label: 'Upload Event Header',
+                                alignTop: true,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Image picker coming soon!')),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: const Center(
+                                      child: Icon(Icons.image_outlined, color: Colors.black),
+                                    ),
+                                  ),
+                                ),
                               ),
                               _FormRow(
                                 label: 'Number of Slots',

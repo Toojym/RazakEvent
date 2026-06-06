@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import '../models/date_filter.dart';
 import '../repositories/event_repository.dart';
+import '../repositories/report_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final EventRepository _repository;
+  final ReportRepository _reportRepo = ReportRepository();
+
   StreamSubscription<List<EventModel>>? _sub;
+  StreamSubscription? _reportSub;
 
   List<EventModel> _events = [];
   bool _isLoading = true;
   String _selectedCategory = 'All';
+  int _uploadedReportsCount = 0;
 
   HomeViewModel(this._repository) {
     // Load all upcoming events once and keep them live
@@ -20,18 +26,55 @@ class HomeViewModel extends ChangeNotifier {
           _events = events;
           _isLoading = false;
           notifyListeners();
+        }, onError: (error) {
+          _isLoading = false;
+          notifyListeners();
         });
+
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      _reportSub?.cancel();
+      if (user != null) {
+        _reportSub = _reportRepo.watchReportsForOrganizer(user.uid).listen((reports) {
+          _uploadedReportsCount = reports.length;
+          notifyListeners();
+        }, onError: (error) {
+          // Ignore index errors or permission errors gracefully
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _sub?.cancel();
+    _reportSub?.cancel();
     super.dispose();
   }
 
   // ── Exposed state ────────────────────────────────────────────────
   bool get isLoading => _isLoading;
   String get selectedCategory => _selectedCategory;
+
+  // ── Organizer Home Data ──────────────────────────────────────────
+  int get activeEventsCount {
+    return _events.length;
+  }
+  
+  List<EventModel> get allUpcomingEvents => _events;
+  
+  List<EventModel> get organizerUpcomingEvents {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return [];
+    return _events.where((e) => e.createdBy == uid).toList();
+  }
+
+  int get uploadedReportsCount => _uploadedReportsCount;
+  
+  int get uploadedPaperworkCount {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return 0;
+    return _events.where((e) => e.createdBy == uid && e.hasPaperwork).length;
+  }
 
   // ── Featured event — soonest upcoming event ──────────────────────
   EventModel? get featuredEvent => _events.isNotEmpty ? _events.first : null;

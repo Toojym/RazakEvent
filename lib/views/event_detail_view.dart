@@ -114,11 +114,24 @@ class _EventDetailBody extends StatelessWidget {
                         width: double.infinity,
                         height: 48,
                         child: ElevatedButton(
-                          onPressed: vm.isLoading ? null : () => vm.register(),
+                          onPressed: vm.isLoading
+                              ? null
+                              : () {
+                                  if (vm.isRegistered) {
+                                    _showUnregisterConfirmDialog(context, vm);
+                                  } else {
+                                    vm.register();
+                                  }
+                                },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1E5BB8), // Darker blue matching screenshot
+                            backgroundColor: vm.isRegistered 
+                                ? Colors.transparent 
+                                : const Color(0xFF1E5BB8), // Darker blue matching screenshot
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
+                              side: vm.isRegistered 
+                                  ? const BorderSide(color: Colors.redAccent, width: 1.5)
+                                  : BorderSide.none,
                             ),
                           ),
                           child: vm.isLoading
@@ -130,9 +143,10 @@ class _EventDetailBody extends StatelessWidget {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
-                                  'Register',
+                              : Text(
+                                  vm.isRegistered ? 'Cancel Registration' : 'Register',
                                   style: TextStyle(
+                                    color: vm.isRegistered ? Colors.redAccent : Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -168,6 +182,33 @@ class _EventDetailBody extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showUnregisterConfirmDialog(BuildContext context, EventDetailViewModel vm) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        title: const Text('Cancel Registration', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Are you sure you want to cancel your registration for this event?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('No', style: TextStyle(color: Colors.white54)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              vm.unregister();
+            },
+            child: const Text('Yes, Cancel', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
       ),
     );
   }

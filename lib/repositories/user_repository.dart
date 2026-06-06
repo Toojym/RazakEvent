@@ -44,17 +44,30 @@ class UserRepository {
   }
 
   // ── Calculate the user's leaderboard rank ──────────────────────────
-  Future<int> getUserRank(int userMeritPoints) async {
+  /// Finds the user's 1-based position in the leaderboard sorted by
+  /// [meritPoints] descending — the same ordering used by [watchLeaderboard].
+  /// Falls back to the count-based approach if the user isn't found in
+  /// the top results.
+  Future<int> getUserRank(String uid) async {
     try {
-      final countQuery = await _firestore
+      // Fetch the full sorted list (same order as the leaderboard view).
+      final snapshot = await _firestore
           .collection('users')
-          .where('meritPoints', isGreaterThan: userMeritPoints)
-          .count()
+          .orderBy('meritPoints', descending: true)
           .get();
-          
-      return (countQuery.count ?? 0) + 1;
+
+      // Find the user's exact position by UID.
+      final docs = snapshot.docs;
+      for (int i = 0; i < docs.length; i++) {
+        if (docs[i].id == uid) {
+          return i + 1; // 1-based rank
+        }
+      }
+
+      // User document not found — shouldn't happen, but return 0 as fallback.
+      return 0;
     } catch (_) {
-      return 0; // Return 0 or handle error if needed
+      return 0;
     }
   }
 

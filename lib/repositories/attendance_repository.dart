@@ -47,4 +47,17 @@ class AttendanceRepository {
         .get();
     return query.count ?? 0;
   }
+
+  /// Gets all attendees for a specific event
+  Future<List<AttendanceModel>> getAttendeesForEvent(String eventId) async {
+    final query = await _firestore
+        .collection('attendances')
+        .where('eventId', isEqualTo: eventId)
+        .orderBy('scannedAt', descending: true)
+        .get();
+
+    return query.docs
+        .map((doc) => AttendanceModel.fromMap(doc.data(), doc.id))
+        .toList();
+  }
 }

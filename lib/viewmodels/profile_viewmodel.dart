@@ -16,6 +16,14 @@ class ProfileViewModel extends ChangeNotifier {
     _loadProfileData();
   }
 
+  bool _isDisposed = false;
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
   bool _isLoading = true;
   bool get isLoading => _isLoading;
 
@@ -37,7 +45,7 @@ class ProfileViewModel extends ChangeNotifier {
   Future<void> _loadProfileData() async {
     _isLoading = true;
     _errorMessage = null;
-    notifyListeners();
+    if (!_isDisposed) notifyListeners();
 
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
@@ -66,7 +74,7 @@ class ProfileViewModel extends ChangeNotifier {
 
         // Rank calculation
         if (_user != null) {
-          _rank = await _userRepo.getUserRank(_user!.meritPoints);
+          _rank = await _userRepo.getUserRank(uid);
         }
       }
     } catch (e) {
@@ -74,7 +82,7 @@ class ProfileViewModel extends ChangeNotifier {
       debugPrint('Error loading profile data: $e');
     } finally {
       _isLoading = false;
-      notifyListeners();
+      if (!_isDisposed) notifyListeners();
     }
   }
 

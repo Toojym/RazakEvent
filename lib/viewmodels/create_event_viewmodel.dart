@@ -21,6 +21,9 @@ class CreateEventViewModel extends ChangeNotifier {
     int? maxCapacity,
     String? imageUrl,
     required String category,
+    bool hasPaperwork = true,
+    String? posterUrl,
+    String? headerUrl,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -48,6 +51,9 @@ class CreateEventViewModel extends ChangeNotifier {
         crewQrCodeData: crewQrCodeData,
         maxCapacity: maxCapacity,
         imageUrl: imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim(),
+        posterUrl: posterUrl,
+        headerUrl: headerUrl,
+        hasPaperwork: hasPaperwork,
         category: category,
       );
 
