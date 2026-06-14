@@ -11,6 +11,7 @@ class EventDetailViewModel extends ChangeNotifier {
   bool _isLoading = true;
   String? _errorMessage;
   bool _isRegistered = false;
+  int _totalRegistered = 0;
 
   EventDetailViewModel({required this.event}) {
     _checkRegistrationStatus();
@@ -30,12 +31,13 @@ class EventDetailViewModel extends ChangeNotifier {
 
   Future<void> _checkRegistrationStatus() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
+    try {
+      if (user != null) {
         _isRegistered = await _registrationRepo.hasRegistered(event.eventId, user.uid);
-      } catch (e) {
-        debugPrint('Error checking registration status: $e');
       }
+      _totalRegistered = await _registrationRepo.getRegistrationCountForEvent(event.eventId);
+    } catch (e) {
+      debugPrint('Error fetching event stats: $e');
     }
     _isLoading = false;
     if (!_isDisposed) notifyListeners();
@@ -51,10 +53,10 @@ class EventDetailViewModel extends ChangeNotifier {
   String get status => 'Unregistered'; // Mock status
   String get fee => 'RM 5.00'; // Mock fee
 
-  // Mock slots data
-  int get filledSlots => 67;
-  int get emptySlots => 3;
-  int get availablePositions => 5;
+  // Dynamic slots data
+  int get filledSlots => _totalRegistered;
+  int get emptySlots => (event.maxCapacity ?? 15) - _totalRegistered < 0 ? 0 : (event.maxCapacity ?? 15) - _totalRegistered;
+  int get availablePositions => emptySlots;
 
   Future<void> register() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -71,6 +73,7 @@ class EventDetailViewModel extends ChangeNotifier {
     try {
       await _registrationRepo.registerUser(event.eventId, user.uid);
       _isRegistered = true;
+      _totalRegistered++;
     } catch (e) {
       _errorMessage = 'Failed to register: $e';
       debugPrint('Registration error: $e');
@@ -91,6 +94,7 @@ class EventDetailViewModel extends ChangeNotifier {
     try {
       await _registrationRepo.unregisterUser(event.eventId, user.uid);
       _isRegistered = false;
+      if (_totalRegistered > 0) _totalRegistered--;
     } catch (e) {
       _errorMessage = 'Failed to un-register: $e';
     } finally {

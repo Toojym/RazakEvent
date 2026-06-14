@@ -5,8 +5,9 @@ import '../models/event_model.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'logo_view.dart';
-import 'edit_event_view.dart';
-import 'view_participants_view.dart';
+
+import 'view_registered_participants_view.dart';
+import 'event_qr_view.dart';
 
 class ActiveEventsListView extends StatelessWidget {
   const ActiveEventsListView({super.key});
@@ -56,27 +57,7 @@ class ActiveEventsListView extends StatelessWidget {
                           },
                         ),
                 ),
-                // Add padding at bottom to clear the bottom nav bar (if this was in the main tab)
-                // But this is pushed on top of MainView, so the bottom nav won't be visible.
-                // However, we should add a back button. 
-                // Wait, the Figma design shows the bottom nav bar! 
-                // So this should probably be pushed without replacing the bottom nav bar?
-                // Actually, Flutter's default push covers the bottom nav bar. To keep the bottom nav bar, 
-                // we'd need nested navigators or to just add a back button.
-                // Let's add a back button at the top left just in case.
-              ],
-            ),
-          ),
-          // Back button
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ),
+
         ],
       ),
     );
@@ -117,24 +98,24 @@ class _EventListItem extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           _IconButton(
-            icon: Icons.people_outline,
+            icon: Icons.people,
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ViewParticipantsView(event: event),
+                  builder: (_) => ViewRegisteredParticipantsView(event: event),
                 ),
               );
             },
           ),
           const SizedBox(width: 8),
           _IconButton(
-            icon: Icons.edit_outlined,
+            icon: Icons.qr_code_2,
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => EditEventView(event: event),
+                  builder: (_) => EventQrView(event: event),
                 ),
               );
             },

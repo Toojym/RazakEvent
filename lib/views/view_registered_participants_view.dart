@@ -2,29 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
 import '../utils/app_theme.dart';
-import '../viewmodels/view_participants_viewmodel.dart';
+import '../viewmodels/view_registered_participants_viewmodel.dart';
 import 'logo_view.dart';
 
-class ViewParticipantsView extends StatelessWidget {
+class ViewRegisteredParticipantsView extends StatelessWidget {
   final EventModel event;
 
-  const ViewParticipantsView({super.key, required this.event});
+  const ViewRegisteredParticipantsView({super.key, required this.event});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ViewParticipantsViewModel(event: event),
-      child: const _ViewParticipantsBody(),
+      create: (_) => ViewRegisteredParticipantsViewModel(event: event),
+      child: const _ViewRegisteredParticipantsBody(),
     );
   }
 }
 
-class _ViewParticipantsBody extends StatelessWidget {
-  const _ViewParticipantsBody();
+class _ViewRegisteredParticipantsBody extends StatelessWidget {
+  const _ViewRegisteredParticipantsBody();
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<ViewParticipantsViewModel>();
+    final vm = context.watch<ViewRegisteredParticipantsViewModel>();
     final event = vm.event;
     final participants = vm.participants;
     final maxSlots = event.maxCapacity ?? 15;
@@ -87,7 +87,7 @@ class _ViewParticipantsBody extends StatelessWidget {
                       : participants.isEmpty
                           ? const Center(
                               child: Text(
-                                'No participants yet.',
+                                'No registered participants yet.',
                                 style: TextStyle(color: Colors.white54),
                               ),
                             )
@@ -119,20 +119,6 @@ class _ViewParticipantsBody extends StatelessWidget {
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 12,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      // Status Icon
-                                      Tooltip(
-                                        message: participant.status,
-                                        child: Icon(
-                                          participant.status == 'Attended'
-                                              ? Icons.check_circle
-                                              : Icons.how_to_reg,
-                                          color: participant.status == 'Attended'
-                                              ? Colors.green
-                                              : Colors.white54,
-                                          size: 16,
                                         ),
                                       ),
                                     ],

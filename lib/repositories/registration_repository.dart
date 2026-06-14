@@ -64,4 +64,13 @@ class RegistrationRepository {
         .get();
     return query.count ?? 0;
   }
+
+  Future<int> getRegistrationCountForEvent(String eventId) async {
+    final query = await _firestore
+        .collection('registrations')
+        .where('eventId', isEqualTo: eventId)
+        .count()
+        .get();
+    return query.count ?? 0;
+  }
 }

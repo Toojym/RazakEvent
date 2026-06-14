@@ -17,6 +17,7 @@ class EventModel {
   final String title;
   final String description;
   final DateTime date;
+  final DateTime? endDate;
   final String location;
   final int attendeeMeritPoints;
   final int crewMeritPoints;
@@ -35,6 +36,7 @@ class EventModel {
     required this.title,
     required this.description,
     required this.date,
+    this.endDate,
     required this.location,
     required this.attendeeMeritPoints,
     required this.crewMeritPoints,
@@ -53,6 +55,7 @@ class EventModel {
     'title': title,
     'description': description,
     'date': Timestamp.fromDate(date),
+    'endDate': endDate != null ? Timestamp.fromDate(endDate!) : null,
     'location': location,
     'attendeeMeritPoints': attendeeMeritPoints,
     'crewMeritPoints': crewMeritPoints,
@@ -73,6 +76,7 @@ class EventModel {
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       date: (map['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      endDate: (map['endDate'] as Timestamp?)?.toDate(),
       location: map['location'] ?? '',
       attendeeMeritPoints: map['attendeeMeritPoints'] ?? 1,
       crewMeritPoints: map['crewMeritPoints'] ?? 3,

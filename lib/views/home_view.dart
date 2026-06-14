@@ -105,7 +105,7 @@ class _FeaturedBanner extends StatelessWidget {
             Image.network(
               event!.imageUrl!,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const _BannerPlaceholder(),
+              errorBuilder: (_, _, _) => const _BannerPlaceholder(),
             )
           else
             const _BannerPlaceholder(),
@@ -313,7 +313,7 @@ class _SectionHeader extends StatelessWidget {
               ),
             ),
           ),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );
@@ -442,8 +442,8 @@ class _HorizontalEventList extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: 3,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (_, __) => Container(
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (_, _) => Container(
           width: 140,
           height: 150,
           decoration: BoxDecoration(
@@ -496,7 +496,7 @@ class _EventCard extends StatelessWidget {
               ? Image.network(
                   event.imageUrl!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _CardPlaceholder(event: event),
+                  errorBuilder: (_, _, _) => _CardPlaceholder(event: event),
                 )
               : _CardPlaceholder(event: event),
         ),
