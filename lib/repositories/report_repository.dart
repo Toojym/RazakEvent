@@ -34,4 +34,15 @@ class ReportRepository {
             .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
             .toList());
   }
+
+  /// Streams all reports system-wide (used by admin dashboard).
+  Stream<List<ReportModel>> watchAllReports() {
+    return _firestore
+        .collection('reports')
+        .orderBy('uploadedAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
+            .toList());
+  }
 }

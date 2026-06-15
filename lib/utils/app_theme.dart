@@ -57,6 +57,16 @@ class AppTheme {
     ),
   );
 
+  static const String backgroundImage4 = 'assets/images/bg_texture4.webp';
+
+  /// Returns a BoxDecoration that uses the admin background image asset.
+  static BoxDecoration get backgroundDecoration4 => const BoxDecoration(
+    image: DecorationImage(
+      image: AssetImage(backgroundImage4),
+      fit: BoxFit.cover,
+    ),
+  );
+
   /// Gradient-only fallback decoration.
   static const BoxDecoration gradientDecoration = BoxDecoration(
     gradient: backgroundGradient,

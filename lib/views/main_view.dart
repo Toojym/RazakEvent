@@ -9,6 +9,7 @@ import 'scan_view.dart';
 import 'create_event_view.dart';
 import 'profile_view.dart';
 import 'organizer_profile_view.dart';
+import 'admin_main_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../repositories/user_repository.dart';
 import '../models/user_model.dart';
@@ -70,6 +71,11 @@ class _MainViewState extends State<MainView> {
         backgroundColor: Color(0xFF0A0A0A),
         body: Center(child: CircularProgressIndicator(color: Colors.white)),
       );
+    }
+
+    // Admin users get their own dedicated shell
+    if (_user?.isAdmin ?? false) {
+      return const AdminMainView();
     }
 
     final bool isOrganizer = _user?.isOrganizer ?? false;
