@@ -35,18 +35,40 @@ class _ViewRegisteredParticipantsBody extends StatelessWidget {
         children: [
           // Background
           Positioned.fill(
-            child: Container(decoration: AppTheme.backgroundDecoration3),
+            child: Container(decoration: AppTheme.backgroundDecoration4),
           ),
-          
+
           SafeArea(
             child: Column(
               children: [
-                // Header
-                const SizedBox(height: 16),
+                // ── Top bar with "Event Details" back button ──
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    label: const Text(
+                      'Event Details',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ── Logo & subtitle ──
+                const SizedBox(height: 8),
                 const Center(child: RazakEventLogo(fontSize: 24)),
                 const SizedBox(height: 4),
                 const Text(
-                  'View Participants',
+                  'Edit Participants',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -54,8 +76,8 @@ class _ViewRegisteredParticipantsBody extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
-                // Event Details
+
+                // ── Event title & count ──
                 Text(
                   event.title,
                   style: const TextStyle(
@@ -73,16 +95,17 @@ class _ViewRegisteredParticipantsBody extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 32),
-                
-                // Divider above list
+                const SizedBox(height: 24),
+
+                // ── Divider above list ──
                 const Divider(color: Colors.white24, height: 1, thickness: 1),
-                
-                // Participants List
+
+                // ── Participants list ──
                 Expanded(
                   child: vm.isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+                          child: CircularProgressIndicator(
+                              color: AppTheme.primaryBlue),
                         )
                       : participants.isEmpty
                           ? const Center(
@@ -92,17 +115,20 @@ class _ViewRegisteredParticipantsBody extends StatelessWidget {
                               ),
                             )
                           : ListView.separated(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 0),
                               itemCount: participants.length,
-                              separatorBuilder: (context, index) => const Divider(
+                              separatorBuilder: (context, index) =>
+                                  const Divider(
                                 color: Colors.white24,
                                 height: 1,
-                                thickness: 1,
+                                thickness: 0.5,
                               ),
                               itemBuilder: (context, index) {
                                 final participant = participants[index];
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -128,17 +154,6 @@ class _ViewRegisteredParticipantsBody extends StatelessWidget {
                             ),
                 ),
               ],
-            ),
-          ),
-          
-          // Back Button
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
-              ),
             ),
           ),
         ],

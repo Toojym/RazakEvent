@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../models/event_model.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/admin_events_viewmodel.dart';
+import 'admin_approve_reports_view.dart';
+import 'admin_event_reports_view.dart';
 import 'logo_view.dart';
 
 /// Admin view – scrollable list of past (already finished) events.
@@ -155,18 +157,29 @@ class _PastEventRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // Blue action buttons (functionality TBD)
+          // View paperwork button
           _BlueIconButton(
             icon: Icons.visibility,
             onPressed: () {
-              // TODO: Admin view action
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminEventReportsView(event: event),
+                ),
+              );
             },
           ),
           const SizedBox(width: 8),
+          // Approve / deny paperwork button
           _BlueIconButton(
-            icon: Icons.print,
+            icon: Icons.assignment_turned_in,
             onPressed: () {
-              // TODO: Admin print / export action
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminApproveReportsView(event: event),
+                ),
+              );
             },
           ),
         ],

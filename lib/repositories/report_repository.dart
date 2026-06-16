@@ -56,4 +56,24 @@ class ReportRepository {
         .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
         .toList();
   }
+
+  /// Fetches all reports for a specific event.
+  Future<List<ReportModel>> getReportsForEvent(String eventId) async {
+    final snapshot = await _firestore
+        .collection('reports')
+        .where('eventId', isEqualTo: eventId)
+        .orderBy('uploadedAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
+        .toList();
+  }
+
+  /// Updates the approval status of a report ('pending', 'approved', 'denied').
+  Future<void> updateReportStatus(String reportId, String status) async {
+    await _firestore.collection('reports').doc(reportId).update({
+      'approvalStatus': status,
+    });
+  }
 }

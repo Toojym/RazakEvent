@@ -9,6 +9,7 @@ class ReportModel {
   final DateTime uploadedAt;
   final String? fileUrl;
   final String? fileName;
+  final String approvalStatus; // 'pending', 'approved', 'denied'
 
   ReportModel({
     required this.reportId,
@@ -19,6 +20,7 @@ class ReportModel {
     required this.uploadedAt,
     this.fileUrl,
     this.fileName,
+    this.approvalStatus = 'pending',
   });
 
   Map<String, dynamic> toMap() => {
@@ -29,6 +31,7 @@ class ReportModel {
         'uploadedAt': Timestamp.fromDate(uploadedAt),
         'fileUrl': fileUrl,
         'fileName': fileName,
+        'approvalStatus': approvalStatus,
       };
 
   factory ReportModel.fromMap(Map<String, dynamic> map, String documentId) {
@@ -41,6 +44,7 @@ class ReportModel {
       uploadedAt: (map['uploadedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       fileUrl: map['fileUrl'],
       fileName: map['fileName'],
+      approvalStatus: map['approvalStatus'] ?? 'pending',
     );
   }
 }
