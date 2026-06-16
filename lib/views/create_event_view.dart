@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/create_event_viewmodel.dart';
 
@@ -89,6 +90,22 @@ class _CreateEventViewState extends State<CreateEventView> {
       startTime!.hour,
       startTime!.minute,
     );
+
+    if (endTime != null) {
+      final finalEndTime = DateTime(
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
+        endTime!.hour,
+        endTime!.minute,
+      );
+      if (finalEndTime.isBefore(finalDateTime)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Event End Time cannot be before Start Time.")),
+        );
+        return;
+      }
+    }
 
     int? slots;
     if (slotsController.text.isNotEmpty) {
@@ -347,7 +364,11 @@ class _CreateEventViewState extends State<CreateEventView> {
                                   children: [
                                     Expanded(
                                       flex: 2,
-                                      child: _PillTextField(controller: slotsController, keyboardType: TextInputType.number),
+                                      child: _PillTextField(
+                                        controller: slotsController,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(5)],
+                                      ),
                                     ),
                                     const SizedBox(width: 8),
                                     const Expanded(
@@ -361,11 +382,19 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 label: 'Registration Fee',
                                 child: Row(
                                   children: [
-                                    Expanded(child: _PillTextField(controller: feeRinggitController, keyboardType: TextInputType.number)),
+                                    Expanded(child: _PillTextField(
+                                      controller: feeRinggitController,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(5)],
+                                    )),
                                     const SizedBox(width: 8),
                                     const Text('Ringgit', style: TextStyle(color: Colors.white, fontSize: 10)),
                                     const SizedBox(width: 8),
-                                    Expanded(child: _PillTextField(controller: feeCentsController, keyboardType: TextInputType.number)),
+                                    Expanded(child: _PillTextField(
+                                      controller: feeCentsController,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
+                                    )),
                                     const SizedBox(width: 8),
                                     const Text('Cents', style: TextStyle(color: Colors.white, fontSize: 10)),
                                   ],
@@ -373,11 +402,19 @@ class _CreateEventViewState extends State<CreateEventView> {
                               ),
                               _FormRow(
                                 label: 'Attendee Merits',
-                                child: _PillTextField(controller: attendeeMeritController, keyboardType: TextInputType.number),
+                                child: _PillTextField(
+                                  controller: attendeeMeritController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(5)],
+                                ),
                               ),
                               _FormRow(
                                 label: 'Crew Merits',
-                                child: _PillTextField(controller: crewMeritController, keyboardType: TextInputType.number),
+                                child: _PillTextField(
+                                  controller: crewMeritController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(5)],
+                                ),
                               ),
                               _FormRow(
                                 label: 'List Category',
@@ -493,8 +530,13 @@ class _FormRow extends StatelessWidget {
 class _PillTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
 
-  const _PillTextField({required this.controller, this.keyboardType = TextInputType.text});
+  const _PillTextField({
+    required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.inputFormatters,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -503,6 +545,7 @@ class _PillTextField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         style: const TextStyle(color: Colors.black, fontSize: 13),
         decoration: InputDecoration(
           filled: true,
