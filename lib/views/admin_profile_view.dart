@@ -34,7 +34,7 @@ class _AdminProfileBody extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Container(decoration: AppTheme.backgroundDecoration3),
+            child: Container(decoration: AppTheme.backgroundDecoration4),
           ),
           SafeArea(
             child: SingleChildScrollView(

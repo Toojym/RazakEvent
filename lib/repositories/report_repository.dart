@@ -45,4 +45,15 @@ class ReportRepository {
             .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
             .toList());
   }
+  /// Fetches all reports system-wide as a one-shot future (used by admin events).
+  Future<List<ReportModel>> getAllReportsOnce() async {
+    final snapshot = await _firestore
+        .collection('reports')
+        .orderBy('uploadedAt', descending: true)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
+        .toList();
+  }
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/admin_home_viewmodel.dart';
+import 'admin_active_events_view.dart';
+import 'admin_past_events_view.dart';
 import 'logo_view.dart';
 
 /// Admin Home View
@@ -60,9 +62,7 @@ class AdminHomeView extends StatelessWidget {
                             Color(0xFFB8860B),
                             Color(0xFFDAA520),
                           ],
-                          onPressed: () {
-                            // TODO: Navigate to admin events list
-                          },
+                          onPressed: () => _showEventsChoice(context),
                         ),
                         const SizedBox(height: 24),
 
@@ -119,6 +119,156 @@ class AdminHomeView extends StatelessWidget {
                   ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ── Bottom-sheet choice: Active vs Past events ──────────────────────
+  void _showEventsChoice(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+        decoration: const BoxDecoration(
+          color: Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Text(
+              'View Events',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Active events option
+            _ChoiceButton(
+              label: 'View Active Events',
+              subtitle: 'Currently running or upcoming',
+              icon: Icons.event_available,
+              onTap: () {
+                Navigator.pop(context); // close sheet
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AdminActiveEventsView(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            // Past events option
+            _ChoiceButton(
+              label: 'View Past Events',
+              subtitle: 'Events that have already finished',
+              icon: Icons.history,
+              onTap: () {
+                Navigator.pop(context); // close sheet
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AdminPastEventsView(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Choice button used inside the bottom sheet ──────────────────────────
+class _ChoiceButton extends StatelessWidget {
+  final String label;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ChoiceButton({
+    required this.label,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.12),
+              width: 0.5,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D559E).withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: Colors.white, size: 22),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right,
+                color: Colors.white38,
+                size: 22,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
