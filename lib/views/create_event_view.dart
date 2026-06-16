@@ -22,6 +22,8 @@ class _CreateEventViewState extends State<CreateEventView> {
   final slotsController = TextEditingController();
   final feeRinggitController = TextEditingController();
   final feeCentsController = TextEditingController();
+  final attendeeMeritController = TextEditingController();
+  final crewMeritController = TextEditingController();
   
   DateTime? selectedDate;
   TimeOfDay? startTime;
@@ -37,6 +39,8 @@ class _CreateEventViewState extends State<CreateEventView> {
     slotsController.dispose();
     feeRinggitController.dispose();
     feeCentsController.dispose();
+    attendeeMeritController.dispose();
+    crewMeritController.dispose();
     super.dispose();
   }
 
@@ -91,13 +95,23 @@ class _CreateEventViewState extends State<CreateEventView> {
       slots = int.tryParse(slotsController.text);
     }
 
+    int? attendeeMerits = int.tryParse(attendeeMeritController.text);
+    int? crewMerits = int.tryParse(crewMeritController.text);
+
+    if (attendeeMerits == null || crewMerits == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter valid merit points for attendees and crew.")),
+      );
+      return;
+    }
+
     final errorMessage = await viewModel.submitEvent(
       title: titleController.text,
       description: descriptionController.text,
       date: finalDateTime,
       location: locationController.text,
-      attendeeMeritPoints: 2, // Dummy value since it's not in UI
-      crewMeritPoints: 5,     // Dummy value since it's not in UI
+      attendeeMeritPoints: attendeeMerits,
+      crewMeritPoints: crewMerits,
       maxCapacity: slots,
       category: selectedCategory ?? 'Other',
     );
@@ -121,6 +135,8 @@ class _CreateEventViewState extends State<CreateEventView> {
         slotsController.clear();
         feeRinggitController.clear();
         feeCentsController.clear();
+        attendeeMeritController.clear();
+        crewMeritController.clear();
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -354,6 +370,14 @@ class _CreateEventViewState extends State<CreateEventView> {
                                     const Text('Cents', style: TextStyle(color: Colors.white, fontSize: 10)),
                                   ],
                                 ),
+                              ),
+                              _FormRow(
+                                label: 'Attendee Merits',
+                                child: _PillTextField(controller: attendeeMeritController, keyboardType: TextInputType.number),
+                              ),
+                              _FormRow(
+                                label: 'Crew Merits',
+                                child: _PillTextField(controller: crewMeritController, keyboardType: TextInputType.number),
                               ),
                               _FormRow(
                                 label: 'List Category',
