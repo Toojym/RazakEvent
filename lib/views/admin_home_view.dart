@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/admin_home_viewmodel.dart';
 import 'admin_active_events_view.dart';
+import 'admin_all_paperwork_view.dart';
 import 'admin_past_events_view.dart';
+import 'admin_report_filter_view.dart';
 import 'logo_view.dart';
 
 /// Admin Home View
@@ -98,7 +100,12 @@ class AdminHomeView extends StatelessWidget {
                                 label: 'View Reports',
                                 color: const Color(0xFFC62828),
                                 onPressed: () {
-                                  // TODO: Navigate to admin reports list
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const AdminReportFilterView(),
+                                    ),
+                                  );
                                 },
                               ),
                             ),
@@ -108,7 +115,12 @@ class AdminHomeView extends StatelessWidget {
                                 label: 'View Paperworks',
                                 color: const Color(0xFFC62828),
                                 onPressed: () {
-                                  // TODO: Navigate to admin paperworks list
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const AdminAllPaperworkView(),
+                                    ),
+                                  );
                                 },
                               ),
                             ),

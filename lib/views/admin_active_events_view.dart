@@ -5,6 +5,8 @@ import '../models/event_model.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/admin_events_viewmodel.dart';
 import 'logo_view.dart';
+import 'admin_event_reports_view.dart';
+import 'view_registered_participants_view.dart';
 
 /// Admin view – scrollable list of currently running / upcoming events.
 /// Each row shows the event name, "Added on dd/M/yyyy", and two blue
@@ -137,14 +139,24 @@ class _ActiveEventRow extends StatelessWidget {
           _BlueIconButton(
             icon: Icons.people,
             onPressed: () {
-              // TODO: Admin action for participants
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ViewRegisteredParticipantsView(event: event),
+                ),
+              );
             },
           ),
           const SizedBox(width: 8),
           _BlueIconButton(
             icon: Icons.edit,
             onPressed: () {
-              // TODO: Admin action for editing
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AdminEventReportsView(event: event),
+                ),
+              );
             },
           ),
         ],
