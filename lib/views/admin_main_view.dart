@@ -7,7 +7,7 @@ import 'admin_home_view.dart';
 import 'admin_profile_view.dart';
 
 /// AdminMainView — shell that holds the bottom navigation bar for admin users.
-/// Three tabs: Home, Upload (placeholder), Profile.
+/// Two tabs: Home, Profile.
 class AdminMainView extends StatefulWidget {
   const AdminMainView({super.key});
 
@@ -39,15 +39,12 @@ class _AdminMainViewState extends State<AdminMainView> {
         extendBody: true, // lets content slide under the nav bar
         body: IndexedStack(
           index: _currentIndex,
-          children: [
+          children: const [
             // Tab 0: Admin Home
-            const AdminHomeView(),
+            AdminHomeView(),
 
-            // Tab 1: Upload placeholder (does nothing)
-            const _UploadPlaceholder(),
-
-            // Tab 2: Admin Profile
-            const AdminProfileView(),
+            // Tab 1: Admin Profile
+            AdminProfileView(),
           ],
         ),
         bottomNavigationBar: _AdminBottomNavBar(
@@ -55,20 +52,6 @@ class _AdminMainViewState extends State<AdminMainView> {
           onTap: (i) => setState(() => _currentIndex = i),
         ),
       ),
-    );
-  }
-}
-
-// ── Upload Placeholder ─────────────────────────────────────────────────
-/// Empty placeholder tab for the Upload button (does nothing for now).
-class _UploadPlaceholder extends StatelessWidget {
-  const _UploadPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFF0A0A0A),
-      body: SizedBox.shrink(),
     );
   }
 }
@@ -106,11 +89,6 @@ class _AdminBottomNavBar extends StatelessWidget {
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.upload_outlined),
-            activeIcon: Icon(Icons.upload),
-            label: 'Upload',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
