@@ -274,9 +274,7 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 alignTop: true,
                                 child: GestureDetector(
                                   onTap: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Image picker coming soon!')),
-                                    );
+                                    viewModel.pickImage(true);
                                   },
                                   child: Container(
                                     height: 80,
@@ -284,8 +282,17 @@ class _CreateEventViewState extends State<CreateEventView> {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
                                     ),
-                                    child: const Center(
-                                      child: Icon(Icons.image_outlined, color: Colors.black),
+                                    child: Center(
+                                      child: viewModel.posterImage != null
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                viewModel.posterImage!.name,
+                                                style: const TextStyle(color: Colors.black, fontSize: 12),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            )
+                                          : const Icon(Icons.image_outlined, color: Colors.black),
                                     ),
                                   ),
                                 ),
@@ -295,9 +302,7 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 alignTop: true,
                                 child: GestureDetector(
                                   onTap: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Image picker coming soon!')),
-                                    );
+                                    viewModel.pickImage(false);
                                   },
                                   child: Container(
                                     height: 80,
@@ -305,8 +310,17 @@ class _CreateEventViewState extends State<CreateEventView> {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
                                     ),
-                                    child: const Center(
-                                      child: Icon(Icons.image_outlined, color: Colors.black),
+                                    child: Center(
+                                      child: viewModel.headerImage != null
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                viewModel.headerImage!.name,
+                                                style: const TextStyle(color: Colors.black, fontSize: 12),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            )
+                                          : const Icon(Icons.image_outlined, color: Colors.black),
                                     ),
                                   ),
                                 ),

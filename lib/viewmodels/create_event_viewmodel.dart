@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 import '../repositories/event_repository.dart';
 import '../models/event_model.dart';
 
@@ -10,6 +13,29 @@ class CreateEventViewModel extends ChangeNotifier {
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  XFile? _posterImage;
+  XFile? get posterImage => _posterImage;
+
+  XFile? _headerImage;
+  XFile? get headerImage => _headerImage;
+
+  Future<void> pickImage(bool isPoster) async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        if (isPoster) {
+          _posterImage = pickedFile;
+        } else {
+          _headerImage = pickedFile;
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      // Ignored for now
+    }
+  }
 
   Future<String?> submitEvent({
     required String title,
@@ -38,6 +64,25 @@ class CreateEventViewModel extends ChangeNotifier {
       final String attendeeQrCodeData = _uuid.v4();
       final String crewQrCodeData = _uuid.v4();
 
+      String? finalPosterUrl = posterUrl;
+      String? finalHeaderUrl = headerUrl;
+
+      if (_posterImage != null) {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('events/posters/${DateTime.now().millisecondsSinceEpoch}_${_posterImage!.name}');
+        await storageRef.putFile(File(_posterImage!.path));
+        finalPosterUrl = await storageRef.getDownloadURL();
+      }
+
+      if (_headerImage != null) {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('events/headers/${DateTime.now().millisecondsSinceEpoch}_${_headerImage!.name}');
+        await storageRef.putFile(File(_headerImage!.path));
+        finalHeaderUrl = await storageRef.getDownloadURL();
+      }
+
       final event = EventModel(
         eventId: eventId,
         title: title.trim(),
@@ -50,9 +95,9 @@ class CreateEventViewModel extends ChangeNotifier {
         attendeeQrCodeData: attendeeQrCodeData,
         crewQrCodeData: crewQrCodeData,
         maxCapacity: maxCapacity,
-        imageUrl: imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim(),
-        posterUrl: posterUrl,
-        headerUrl: headerUrl,
+        imageUrl: finalPosterUrl ?? finalHeaderUrl ?? (imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim()),
+        posterUrl: finalPosterUrl,
+        headerUrl: finalHeaderUrl,
         hasPaperwork: hasPaperwork,
         category: category,
       );

@@ -95,9 +95,7 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                           alignTop: true,
                           child: GestureDetector(
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('File picker coming soon!')),
-                              );
+                              vmUpload.pickFile();
                             },
                             child: Container(
                               height: 80,
@@ -105,8 +103,17 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Center(
-                                child: Icon(Icons.upload_outlined, color: Colors.black),
+                              child: Center(
+                                child: vmUpload.selectedFile != null
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          vmUpload.selectedFile!.name,
+                                          style: const TextStyle(color: Colors.black, fontSize: 12),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    : const Icon(Icons.upload_outlined, color: Colors.black),
                               ),
                             ),
                           ),

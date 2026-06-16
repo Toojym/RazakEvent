@@ -7,6 +7,8 @@ class ReportModel {
   final String uploaderId;
   final String type; // 'Financial' or 'Program'
   final DateTime uploadedAt;
+  final String? fileUrl;
+  final String? fileName;
 
   ReportModel({
     required this.reportId,
@@ -15,6 +17,8 @@ class ReportModel {
     required this.uploaderId,
     required this.type,
     required this.uploadedAt,
+    this.fileUrl,
+    this.fileName,
   });
 
   Map<String, dynamic> toMap() => {
@@ -23,6 +27,8 @@ class ReportModel {
         'uploaderId': uploaderId,
         'type': type,
         'uploadedAt': Timestamp.fromDate(uploadedAt),
+        'fileUrl': fileUrl,
+        'fileName': fileName,
       };
 
   factory ReportModel.fromMap(Map<String, dynamic> map, String documentId) {
@@ -33,6 +39,8 @@ class ReportModel {
       uploaderId: map['uploaderId'] ?? '',
       type: map['type'] ?? 'Program',
       uploadedAt: (map['uploadedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      fileUrl: map['fileUrl'],
+      fileName: map['fileName'],
     );
   }
 }
