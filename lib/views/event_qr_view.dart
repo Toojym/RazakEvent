@@ -1,10 +1,10 @@
-import 'dart:typed_data';
+
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import '../models/event_model.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/event_qr_viewmodel.dart';
@@ -48,7 +48,7 @@ class _EventQrBodyState extends State<_EventQrBody> {
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final bytes = byteData!.buffer.asUint8List();
 
-      final result = await ImageGallerySaver.saveImage(
+      final result = await ImageGallerySaverPlus.saveImage(
         bytes,
         quality: 100,
         name: "RazakEvent_QR_${DateTime.now().millisecondsSinceEpoch}",

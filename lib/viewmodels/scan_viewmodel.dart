@@ -71,6 +71,16 @@ class ScanViewModel extends ChangeNotifier {
       return;
     }
 
+    // ── Guard 4: validate QR format (must be a UUID) ──
+    final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(qrData);
+    if (!isUuid) {
+      _status = ScanStatus.error;
+      _message = 'Invalid QR code. Please scan a valid participant or crew QR code.';
+      _logScan('ERROR_INVALID_FORMAT', qrData: qrData, timestamp: now);
+      notifyListeners();
+      return;
+    }
+
     _lastScanTime = now;
     _processedQrCodes.add(qrData);
     _logScan('SCAN_ACCEPTED', qrData: qrData, timestamp: now);

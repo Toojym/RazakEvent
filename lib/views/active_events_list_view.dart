@@ -57,7 +57,9 @@ class ActiveEventsListView extends StatelessWidget {
                           },
                         ),
                 ),
-
+              ],
+            ),
+          ),
         ],
       ),
     );
