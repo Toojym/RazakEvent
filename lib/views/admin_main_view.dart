@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../repositories/event_repository.dart';
 import '../viewmodels/admin_home_viewmodel.dart';
 import 'admin_home_view.dart';
-import 'organizer_profile_view.dart';
+import 'admin_profile_view.dart';
 
 /// AdminMainView — shell that holds the bottom navigation bar for admin users.
 /// Three tabs: Home, Upload (placeholder), Profile.
@@ -46,8 +46,8 @@ class _AdminMainViewState extends State<AdminMainView> {
             // Tab 1: Upload placeholder (does nothing)
             const _UploadPlaceholder(),
 
-            // Tab 2: Profile (reusing organizer profile for now)
-            const OrganizerProfileView(),
+            // Tab 2: Admin Profile
+            const AdminProfileView(),
           ],
         ),
         bottomNavigationBar: _AdminBottomNavBar(
