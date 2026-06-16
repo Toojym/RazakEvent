@@ -262,6 +262,8 @@ class _PillDropdown<T> extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           isExpanded: true,
+          dropdownColor: Colors.white,
+          style: const TextStyle(color: Colors.black, fontSize: 12),
           hint: Text(hint, style: const TextStyle(color: Colors.black54, fontSize: 10)),
           value: value,
           icon: const Icon(Icons.arrow_drop_down_circle, color: Colors.grey, size: 16),
