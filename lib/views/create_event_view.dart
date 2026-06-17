@@ -91,14 +91,22 @@ class _CreateEventViewState extends State<CreateEventView> {
       startTime!.minute,
     );
 
+    int durationDays = 1;
+    if (durationController.text.isNotEmpty) {
+      durationDays = int.tryParse(durationController.text) ?? 1;
+    }
+    if (durationDays < 1) durationDays = 1;
+
+    DateTime? finalEndTime;
     if (endTime != null) {
-      final finalEndTime = DateTime(
+      finalEndTime = DateTime(
         selectedDate!.year,
         selectedDate!.month,
         selectedDate!.day,
         endTime!.hour,
         endTime!.minute,
-      );
+      ).add(Duration(days: durationDays - 1));
+
       if (finalEndTime.isBefore(finalDateTime)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Event End Time cannot be before Start Time.")),
@@ -126,6 +134,7 @@ class _CreateEventViewState extends State<CreateEventView> {
       title: titleController.text,
       description: descriptionController.text,
       date: finalDateTime,
+      endDate: finalEndTime,
       location: locationController.text,
       attendeeMeritPoints: attendeeMerits,
       crewMeritPoints: crewMerits,

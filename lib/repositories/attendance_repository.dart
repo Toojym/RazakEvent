@@ -53,11 +53,13 @@ class AttendanceRepository {
     final query = await _firestore
         .collection('attendances')
         .where('eventId', isEqualTo: eventId)
-        .orderBy('scannedAt', descending: true)
         .get();
 
-    return query.docs
+    final docs = query.docs
         .map((doc) => AttendanceModel.fromMap(doc.data(), doc.id))
         .toList();
+    
+    docs.sort((a, b) => b.scannedAt.compareTo(a.scannedAt));
+    return docs;
   }
 }

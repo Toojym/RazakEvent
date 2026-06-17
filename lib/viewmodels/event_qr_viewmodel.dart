@@ -52,6 +52,9 @@ class EventQrViewModel extends ChangeNotifier {
 
   void toggleListView(bool showList) {
     _showingAttendeesList = showList;
+    if (showList) {
+      _loadAttendees();
+    }
     if (!_isDisposed) notifyListeners();
   }
 
