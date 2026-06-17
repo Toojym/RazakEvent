@@ -95,7 +95,9 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                           alignTop: true,
                           child: GestureDetector(
                             onTap: () {
-                              vmUpload.pickFile();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Media Upload feature coming soon!')),
+                              );
                             },
                             child: Container(
                               height: 80,
@@ -143,28 +145,9 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                           height: 44,
                           child: ElevatedButton(
                             onPressed: vmUpload.isLoading ? null : () async {
-                              if (_selectedEvent == null || _selectedReportType == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Please select an event and report type')),
-                                );
-                                return;
-                              }
-                              
-                              final success = await vmUpload.uploadReport(
-                                event: _selectedEvent,
-                                type: _selectedReportType!,
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Media Upload feature coming soon!')),
                               );
-                              
-                              if (success && context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Report uploaded successfully!')),
-                                );
-                                Navigator.pop(context);
-                              } else if (!success && context.mounted && vmUpload.errorMessage != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(vmUpload.errorMessage!)),
-                                );
-                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1E5BB8),

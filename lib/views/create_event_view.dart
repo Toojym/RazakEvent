@@ -287,7 +287,7 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 child: GestureDetector(
                                   onTap: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('File picker coming soon!')),
+                                      const SnackBar(content: Text('Media Upload feature coming soon!')),
                                     );
                                   },
                                   child: Container(
@@ -307,7 +307,9 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 alignTop: true,
                                 child: GestureDetector(
                                   onTap: () {
-                                    viewModel.pickImage(true);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Media Upload feature coming soon!')),
+                                    );
                                   },
                                   child: Container(
                                     height: 80,
@@ -335,7 +337,9 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 alignTop: true,
                                 child: GestureDetector(
                                   onTap: () {
-                                    viewModel.pickImage(false);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Media Upload feature coming soon!')),
+                                    );
                                   },
                                   child: Container(
                                     height: 80,

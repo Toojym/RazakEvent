@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 import '../models/report_model.dart';
 import '../models/event_model.dart';
 import '../repositories/report_repository.dart';
@@ -67,22 +65,8 @@ class UploadReportViewModel extends ChangeNotifier {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception("User not logged in");
 
-      // Upload file to Firebase Storage
       final fileName = _selectedFile!.name;
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('reports/${event.eventId}/${DateTime.now().millisecondsSinceEpoch}_$fileName');
-
-      TaskSnapshot uploadTask;
-      if (_selectedFile!.bytes != null) {
-        uploadTask = await storageRef.putData(_selectedFile!.bytes!);
-      } else if (_selectedFile!.path != null) {
-        uploadTask = await storageRef.putFile(File(_selectedFile!.path!));
-      } else {
-        throw Exception("Cannot read file data");
-      }
-
-      final fileUrl = await uploadTask.ref.getDownloadURL();
+      final fileUrl = "";
 
       final report = ReportModel(
         reportId: '',

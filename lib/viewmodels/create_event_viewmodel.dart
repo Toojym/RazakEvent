@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 import '../repositories/event_repository.dart';
 import '../models/event_model.dart';
 
@@ -52,7 +50,7 @@ class CreateEventViewModel extends ChangeNotifier {
     int? maxCapacity,
     String? imageUrl,
     required String category,
-    bool hasPaperwork = true,
+    bool hasPaperwork = false,
     String? posterUrl,
     String? headerUrl,
   }) async {
@@ -71,22 +69,6 @@ class CreateEventViewModel extends ChangeNotifier {
 
       String? finalPosterUrl = posterUrl;
       String? finalHeaderUrl = headerUrl;
-
-      if (_posterImage != null) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('events/posters/${DateTime.now().millisecondsSinceEpoch}_${_posterImage!.name}');
-        await storageRef.putFile(File(_posterImage!.path));
-        finalPosterUrl = await storageRef.getDownloadURL();
-      }
-
-      if (_headerImage != null) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('events/headers/${DateTime.now().millisecondsSinceEpoch}_${_headerImage!.name}');
-        await storageRef.putFile(File(_headerImage!.path));
-        finalHeaderUrl = await storageRef.getDownloadURL();
-      }
 
       final event = EventModel(
         eventId: eventId,
