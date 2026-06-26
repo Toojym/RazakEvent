@@ -6,12 +6,28 @@ class StorageRepository {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final Uuid _uuid = const Uuid();
 
-  Future<String> uploadEventImage(Uint8List bytes, String fileExtension, {required bool isPoster}) async {
-    final folder = isPoster ? 'posters' : 'headers';
+  /// Maps file extension to proper MIME content type.
+  String _contentTypeForExtension(String ext) {
+    switch (ext.toLowerCase()) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      default:
+        return 'image/$ext';
+    }
+  }
+
+  Future<String> uploadEventPoster(Uint8List bytes, String fileExtension) async {
     final fileName = '${_uuid.v4()}.$fileExtension';
-    final ref = _storage.ref().child('events/$folder/$fileName');
-    
-    final metadata = SettableMetadata(contentType: 'image/$fileExtension');
+    final ref = _storage.ref().child('events/posters/$fileName');
+
+    final metadata = SettableMetadata(contentType: _contentTypeForExtension(fileExtension));
     final uploadTask = await ref.putData(bytes, metadata);
     return await uploadTask.ref.getDownloadURL();
   }

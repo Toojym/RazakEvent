@@ -24,7 +24,7 @@ class EventModel {
   final String createdBy;
   final String attendeeQrCodeData;
   final String crewQrCodeData;
-  final String? imageUrl;
+
   final String? posterUrl;
   final bool hasPaperwork;
   final int? maxCapacity;
@@ -43,7 +43,7 @@ class EventModel {
     required this.createdBy,
     required this.attendeeQrCodeData,
     required this.crewQrCodeData,
-    this.imageUrl,
+
     this.posterUrl,
     this.hasPaperwork = false,
     this.maxCapacity,
@@ -51,7 +51,7 @@ class EventModel {
     this.fee = 0.0,
   });
 
-  String? get displayImageUrl => posterUrl ?? imageUrl;
+  String? get displayImageUrl => posterUrl;
 
   Map<String, dynamic> toMap() => {
     'title': title,
@@ -64,7 +64,7 @@ class EventModel {
     'createdBy': createdBy,
     'attendeeQrCodeData': attendeeQrCodeData,
     'crewQrCodeData': crewQrCodeData,
-    'imageUrl': imageUrl,
+
     'posterUrl': posterUrl,
     'hasPaperwork': hasPaperwork,
     'maxCapacity': maxCapacity,
@@ -99,7 +99,7 @@ class EventModel {
       createdBy: map['createdBy'] ?? '',
       attendeeQrCodeData: map['attendeeQrCodeData'] ?? '',
       crewQrCodeData: map['crewQrCodeData'] ?? '',
-      imageUrl: _cleanUrl(map['imageUrl']),
+
       posterUrl: _cleanUrl(map['posterUrl']),
       hasPaperwork: map['hasPaperwork'] ?? false,
       maxCapacity: map['maxCapacity'],

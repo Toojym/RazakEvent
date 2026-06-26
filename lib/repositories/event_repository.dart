@@ -32,7 +32,7 @@ class EventRepository {
         snapshot.docs.map((doc) => EventModel.fromMap(doc.data(), doc.id)).toList());
   }
 
-  Future<void> addEvent(EventModel event) => _collection.add(event.toMap());
+  Future<void> addEvent(EventModel event) => _collection.doc(event.eventId).set(event.toMap());
   Future<void> updateEvent(EventModel event) => _collection.doc(event.eventId).update(event.toMap());
   Future<void> deleteEvent(String id) => _collection.doc(id).delete();
 

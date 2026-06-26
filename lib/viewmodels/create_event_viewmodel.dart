@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import '../repositories/event_repository.dart';
 import '../repositories/storage_repository.dart';
@@ -16,24 +15,26 @@ class CreateEventViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  XFile? _posterImage;
-  XFile? get posterImage => _posterImage;
+  PlatformFile? _posterFile;
+  PlatformFile? get posterFile => _posterFile;
 
   PlatformFile? _paperworkFile;
   PlatformFile? get paperworkFile => _paperworkFile;
 
-  Future<void> pickImage(bool isPoster) async {
+  /// Pick an image file for the event poster.
+  /// Uses FilePicker with withData: true for reliable web support.
+  Future<void> pickPoster() async {
     try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-      if (pickedFile != null) {
-        if (isPoster) {
-          _posterImage = pickedFile;
-          notifyListeners();
-        }
+      final result = await FilePicker.pickFiles(
+        type: FileType.image,
+        withData: true,
+      );
+      if (result != null && result.files.isNotEmpty) {
+        _posterFile = result.files.first;
+        notifyListeners();
       }
     } catch (e) {
-      // Handle error
+      debugPrint('Error picking poster: $e');
     }
   }
 
@@ -49,7 +50,7 @@ class CreateEventViewModel extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      // Handle error
+      debugPrint('Error picking paperwork: $e');
     }
   }
 
@@ -62,9 +63,6 @@ class CreateEventViewModel extends ChangeNotifier {
     required int attendeeMeritPoints,
     required int crewMeritPoints,
     int? maxCapacity,
-    String? imageUrl,
-    String? posterUrl,
-    bool hasPaperwork = false,
     String category = 'Other',
     double fee = 0.0,
   }) async {
@@ -81,15 +79,16 @@ class CreateEventViewModel extends ChangeNotifier {
 
       final StorageRepository storageRepo = StorageRepository();
 
-      String? finalPosterUrl = posterUrl;
-      bool finalHasPaperwork = hasPaperwork;
+      String? finalPosterUrl;
+      bool finalHasPaperwork = false;
 
-      if (_posterImage != null) {
-        final bytes = await _posterImage!.readAsBytes();
-        final ext = _posterImage!.name.split('.').last.toLowerCase();
-        finalPosterUrl = await storageRepo.uploadEventImage(bytes, ext, isPoster: true);
+      // Upload poster image
+      if (_posterFile != null && _posterFile!.bytes != null) {
+        final ext = _posterFile!.extension?.toLowerCase() ?? 'jpg';
+        finalPosterUrl = await storageRepo.uploadEventPoster(_posterFile!.bytes!, ext);
       }
 
+      // Upload paperwork document
       if (_paperworkFile != null && _paperworkFile!.bytes != null) {
         final pwUrl = await storageRepo.uploadEventPaperwork(_paperworkFile!.bytes!, _paperworkFile!.name);
         finalHasPaperwork = true;
@@ -119,7 +118,6 @@ class CreateEventViewModel extends ChangeNotifier {
         attendeeQrCodeData: attendeeQrCodeData,
         crewQrCodeData: crewQrCodeData,
         maxCapacity: maxCapacity,
-        imageUrl: finalPosterUrl ?? (imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim()),
         posterUrl: finalPosterUrl,
         hasPaperwork: finalHasPaperwork,
         category: category,
@@ -127,7 +125,7 @@ class CreateEventViewModel extends ChangeNotifier {
       );
 
       await _eventRepository.addEvent(event);
-      _posterImage = null;
+      _posterFile = null;
       _paperworkFile = null;
       return null;
     } catch (e) {
