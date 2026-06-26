@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -450,7 +451,7 @@ class _CreateEventViewState extends State<CreateEventView> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   ),
                                   child: viewModel.isLoading
-                                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white))
+                                      ? const SizedBox(width: 20, height: 20, child: CustomLoadingIndicator(color: Colors.white))
                                       : const Text('Add Event', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                                 ),
                               ),

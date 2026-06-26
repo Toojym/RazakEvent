@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'main_view.dart';
@@ -16,7 +17,7 @@ class RootView extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             backgroundColor: Color(0xFF0A0A0A),
-            body: Center(child: CircularProgressIndicator(color: Colors.white)),
+            body: Center(child: CustomLoadingIndicator(color: Colors.white)),
           );
         }
         

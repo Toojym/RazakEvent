@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +36,7 @@ class OrganizerHomeView extends StatelessWidget {
             child: vm.isLoading
                 ? const Center(
                     child:
-                        CircularProgressIndicator(color: AppTheme.primaryBlue),
+                        CustomLoadingIndicator(color: AppTheme.primaryBlue),
                   )
                 : SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),

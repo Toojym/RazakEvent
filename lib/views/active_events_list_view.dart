@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,7 @@ class ActiveEventsListView extends StatelessWidget {
                 Expanded(
                   child: vm.isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(
+                          child: CustomLoadingIndicator(
                               color: AppTheme.primaryBlue),
                         )
                       : ListView.separated(

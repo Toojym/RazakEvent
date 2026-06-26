@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
@@ -154,7 +155,7 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             child: vmUpload.isLoading 
-                                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                ? const SizedBox(height: 20, width: 20, child: CustomLoadingIndicator(color: Colors.white, strokeWidth: 2))
                                 : const Text('Upload Report', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white)),
                           ),
                         ),

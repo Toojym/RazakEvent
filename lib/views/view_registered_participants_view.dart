@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
@@ -104,7 +105,7 @@ class _ViewRegisteredParticipantsBody extends StatelessWidget {
                 Expanded(
                   child: vm.isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(
+                          child: CustomLoadingIndicator(
                               color: AppTheme.primaryBlue),
                         )
                       : participants.isEmpty

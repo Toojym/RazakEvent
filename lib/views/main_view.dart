@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,7 @@ class _MainViewState extends State<MainView> {
     if (_isLoadingUser) {
       return const Scaffold(
         backgroundColor: Color(0xFF0A0A0A),
-        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+        body: Center(child: CustomLoadingIndicator(color: Colors.white)),
       );
     }
 

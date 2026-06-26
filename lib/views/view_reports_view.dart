@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../utils/app_theme.dart';
@@ -55,7 +56,7 @@ class _ViewReportsBody extends StatelessWidget {
                 // Reports List
                 Expanded(
                   child: vm.isLoading
-                      ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue))
+                      ? const Center(child: CustomLoadingIndicator(color: AppTheme.primaryBlue))
                       : reports.isEmpty
                           ? const Center(child: Text('No reports uploaded yet.', style: TextStyle(color: Colors.white54)))
                           : ListView.separated(

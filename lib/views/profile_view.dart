@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ class _ProfileViewBody extends StatelessWidget {
         child: SafeArea(
           child: vm.isLoading
               ? const Center(
-                  child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+                  child: CustomLoadingIndicator(color: AppTheme.primaryBlue),
                 )
               : RefreshIndicator(
                   onRefresh: vm.refresh,

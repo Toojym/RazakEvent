@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -237,7 +238,7 @@ class _EventQrBodyState extends State<_EventQrBody> {
             child: _isSaving 
               ? const SizedBox(
                   width: 24, height: 24, 
-                  child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2)
+                  child: CustomLoadingIndicator(color: Colors.black, strokeWidth: 2)
                 )
               : const Icon(Icons.download, color: Colors.black),
           ),
@@ -296,7 +297,7 @@ class _EventQrBodyState extends State<_EventQrBody> {
       children: [
         Expanded(
           child: vm.isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue))
+              ? const Center(child: CustomLoadingIndicator(color: AppTheme.primaryBlue))
               : vm.filteredAttendees.isEmpty
                   ? const Center(
                       child: Text(

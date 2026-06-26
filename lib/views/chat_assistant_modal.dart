@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
@@ -173,7 +174,7 @@ class _ChatAssistantModalState extends State<ChatAssistantModal> {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryBlue)),
+            SizedBox(width: 16, height: 16, child: CustomLoadingIndicator(strokeWidth: 2, color: AppTheme.primaryBlue)),
             SizedBox(width: 12),
             Text("RazakAI is searching campus events...", style: TextStyle(color: Colors.white70, fontSize: 12)),
           ],

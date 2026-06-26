@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/auth_viewmodel.dart';
@@ -290,7 +291,7 @@ class _AuthViewState extends State<AuthView> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(
+                          child: CustomLoadingIndicator(
                             strokeWidth: 2,
                             color: Colors.white,
                           ),

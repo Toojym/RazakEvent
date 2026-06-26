@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -146,7 +147,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CustomLoadingIndicator(strokeWidth: 2),
                           )
                         : const Text('Resend Verification Link'),
                   ),

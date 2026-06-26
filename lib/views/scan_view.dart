@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
@@ -199,7 +200,7 @@ class _ScannerOverlay extends StatelessWidget {
                 ),
                 child: vm.status == ScanStatus.processing
                     ? const Center(
-                        child: CircularProgressIndicator(
+                        child: CustomLoadingIndicator(
                           color: AppTheme.primaryBlue,
                         ),
                       )

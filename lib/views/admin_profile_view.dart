@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../utils/app_theme.dart';
@@ -80,7 +81,7 @@ class _AdminProfileBody extends StatelessWidget {
                   vm.isLoading
                     ? const Padding(
                         padding: EdgeInsets.symmetric(vertical: 48),
-                        child: Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
+                        child: Center(child: CustomLoadingIndicator(color: AppTheme.primaryBlue)),
                       )
                     : Row(
                         children: [

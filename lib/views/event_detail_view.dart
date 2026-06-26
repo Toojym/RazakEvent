@@ -1,3 +1,4 @@
+import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -128,7 +129,7 @@ class _EventDetailBody extends StatelessWidget {
                                 ? const SizedBox(
                                     width: 24,
                                     height: 24,
-                                    child: CircularProgressIndicator(
+                                    child: CustomLoadingIndicator(
                                       color: Colors.white,
                                       strokeWidth: 2,
                                     ),
