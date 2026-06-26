@@ -50,9 +50,9 @@ class _LogoScreenState extends State<LogoScreen>
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const RootView(),
+          pageBuilder: (context, animation, secondaryAnimation) => const RootView(),
           transitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (_, animation, __, child) =>
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
       );
