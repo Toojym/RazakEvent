@@ -43,12 +43,12 @@ class AdminAllPaperworkViewModel extends ChangeNotifier {
         reportsByEvent.putIfAbsent(report.eventId, () => []).add(report);
       }
 
-      // Build list — only include events that have at least one report
+      // Build list — include events that have uploaded paperwork or reports
       _eventsWithReports = allEvents
-          .where((e) => reportsByEvent.containsKey(e.eventId))
+          .where((e) => e.hasPaperwork || reportsByEvent.containsKey(e.eventId))
           .map((e) => EventWithReports(
                 event: e,
-                reports: reportsByEvent[e.eventId]!,
+                reports: reportsByEvent[e.eventId] ?? [],
               ))
           .toList()
         ..sort((a, b) => b.event.date.compareTo(a.event.date));

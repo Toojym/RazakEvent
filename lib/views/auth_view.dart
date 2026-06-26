@@ -358,6 +358,7 @@ class _AuthViewState extends State<AuthView> {
         DropdownButtonFormField<String>(
           initialValue: _selectedFaculty,
           isExpanded: true,
+          dropdownColor: Colors.white,
           icon: const Icon(Icons.arrow_drop_down, color: AppTheme.textHint),
           style: const TextStyle(fontSize: 14, color: AppTheme.textDark),
           decoration: InputDecoration(
@@ -396,7 +397,13 @@ class _AuthViewState extends State<AuthView> {
             style: TextStyle(color: AppTheme.textHint, fontSize: 14),
           ),
           items: _utmFaculties
-              .map((f) => DropdownMenuItem(value: f, child: Text(f)))
+              .map((f) => DropdownMenuItem(
+                    value: f,
+                    child: Text(
+                      f,
+                      style: const TextStyle(color: AppTheme.textDark, fontSize: 14),
+                    ),
+                  ))
               .toList(),
           onChanged: (value) => setState(() => _selectedFaculty = value),
           validator: (v) =>

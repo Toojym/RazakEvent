@@ -8,6 +8,7 @@ import 'logo_view.dart';
 
 import 'view_registered_participants_view.dart';
 import 'event_qr_view.dart';
+import 'edit_event_view.dart';
 
 class ActiveEventsListView extends StatelessWidget {
   const ActiveEventsListView({super.key});
@@ -118,6 +119,18 @@ class _EventListItem extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => EventQrView(event: event),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+          _IconButton(
+            icon: Icons.edit,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EditEventView(event: event),
                 ),
               );
             },

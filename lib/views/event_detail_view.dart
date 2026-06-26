@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
@@ -27,161 +28,152 @@ class _EventDetailBody extends StatelessWidget {
     final vm = context.watch<EventDetailViewModel>();
 
     return Scaffold(
-      body: Container(
-        decoration: AppTheme.backgroundDecoration2,
-        child: SafeArea(
-          child: Column(
-            children: [
-              // ── Header ──────────────────────────────────────────
-              const SizedBox(height: 16),
-              const Center(child: RazakEventLogo(fontSize: 24)),
-              const SizedBox(height: 4),
-              const Text(
-                'Event Information',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // ── Blurred Glassy Poster Background ─────────────────
+          if (vm.event.displayImageUrl != null)
+            Image.network(
+              vm.event.displayImageUrl!,
+              fit: BoxFit.cover,
+              errorBuilder: (ctx, err, stack) => Container(decoration: AppTheme.backgroundDecoration2),
+            )
+          else
+            Container(decoration: AppTheme.backgroundDecoration2),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+            child: Container(color: Colors.black.withValues(alpha: 0.7)),
+          ),
+
+          // ── Main Content ────────────────────────────────────
+          SafeArea(
+            child: Column(
+              children: [
+                // ── Header ──────────────────────────────────────────
+                const SizedBox(height: 16),
+                const Center(child: RazakEventLogo(fontSize: 24)),
+                const SizedBox(height: 4),
+                const Text(
+                  'Event Information',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // ── Scrollable Content ──────────────────────────────
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      // Top Row (Poster and Details)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Poster
-                          Expanded(
-                            flex: 4,
-                            child: _PosterImage(event: vm.event),
-                          ),
-                          const SizedBox(width: 16),
-                          // Details
-                          Expanded(
-                            flex: 5,
-                            child: _EventDetailsList(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Slots Section
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _SlotCard(
-                              title: 'Filled\nSlots',
-                              value: vm.filledSlots.toString(),
+                // ── Scrollable Content ──────────────────────────────
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        // Top Row (Poster and Details)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Poster
+                            Expanded(
+                              flex: 4,
+                              child: _PosterImage(event: vm.event),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _SlotCard(
-                              title: 'Empty\nSlots',
-                              value: vm.emptySlots.toString(),
+                            const SizedBox(width: 16),
+                            // Details
+                            Expanded(
+                              flex: 5,
+                              child: _EventDetailsList(),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _SlotCard(
-                        title: 'Available\nPositions',
-                        value: vm.availablePositions.toString(),
-                        isFullWidth: true,
-                      ),
-                      const SizedBox(height: 40),
-
-                      // Action Buttons
-                      if (vm.errorMessage != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: Text(
-                            vm.errorMessage!,
-                            style: const TextStyle(
-                              color: Colors.redAccent,
-                              fontSize: 12,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                          ],
                         ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: vm.isLoading
-                              ? null
-                              : () {
-                                  if (vm.isRegistered) {
-                                    _showUnregisterConfirmDialog(context, vm);
-                                  } else {
-                                    vm.register();
-                                  }
-                                },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: vm.isRegistered 
-                                ? Colors.transparent 
-                                : const Color(0xFF1E5BB8), // Darker blue matching screenshot
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: vm.isRegistered 
-                                  ? const BorderSide(color: Colors.redAccent, width: 1.5)
-                                  : BorderSide.none,
+                        const SizedBox(height: 24),
+                        // Action Buttons
+                        if (vm.errorMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Text(
+                              vm.errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.redAccent,
+                                fontSize: 12,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          child: vm.isLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: vm.isLoading
+                                ? null
+                                : () {
+                                    if (vm.isRegistered) {
+                                      _showUnregisterConfirmDialog(context, vm);
+                                    } else {
+                                      vm.register();
+                                    }
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: vm.isRegistered 
+                                  ? Colors.transparent 
+                                  : const Color(0xFF1E5BB8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: vm.isRegistered 
+                                    ? const BorderSide(color: Colors.redAccent, width: 1.5)
+                                    : BorderSide.none,
+                              ),
+                            ),
+                            child: vm.isLoading
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(
+                                    vm.isRegistered ? 'Cancel Registration' : 'Register',
+                                    style: TextStyle(
+                                      color: vm.isRegistered ? Colors.redAccent : Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  vm.isRegistered ? 'Cancel Registration' : 'Register',
-                                  style: TextStyle(
-                                    color: vm.isRegistered ? Colors.redAccent : Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFA01515), // Darker red matching screenshot
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
                           ),
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.white24),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+                        const SizedBox(height: 32),
+                      ],
                   ),
                 ),
               ),
             ],
           ),
         ),
+        ],
       ),
     );
   }
@@ -227,14 +219,14 @@ class _PosterImage extends StatelessWidget {
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white24, width: 0.5),
-        image: event.imageUrl != null
+        image: event.displayImageUrl != null
             ? DecorationImage(
-                image: NetworkImage(event.imageUrl!),
+                image: NetworkImage(event.displayImageUrl!),
                 fit: BoxFit.cover,
               )
             : null,
       ),
-      child: event.imageUrl == null
+      child: event.displayImageUrl == null
           ? _PlaceholderPoster(event: event)
           : null,
     );
@@ -354,12 +346,10 @@ class _DetailRow extends StatelessWidget {
 class _SlotCard extends StatelessWidget {
   final String title;
   final String value;
-  final bool isFullWidth;
 
   const _SlotCard({
     required this.title,
     required this.value,
-    this.isFullWidth = false,
   });
 
   @override

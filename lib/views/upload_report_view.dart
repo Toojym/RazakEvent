@@ -79,7 +79,7 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                                 value: e,
                                 child: Text(
                                   e.title,
-                                  style: const TextStyle(fontSize: 12),
+                                  style: const TextStyle(color: Colors.black, fontSize: 12),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -94,11 +94,7 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                           label: 'Upload Report',
                           alignTop: true,
                           child: GestureDetector(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Media Upload feature coming soon!')),
-                              );
-                            },
+                            onTap: () => vmUpload.pickFile(),
                             child: Container(
                               height: 80,
                               decoration: BoxDecoration(
@@ -130,7 +126,7 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                             items: _reportTypes.map((t) {
                               return DropdownMenuItem(
                                 value: t,
-                                child: Text(t, style: const TextStyle(fontSize: 12)),
+                                child: Text(t, style: const TextStyle(color: Colors.black, fontSize: 12)),
                               );
                             }).toList(),
                             onChanged: (val) => setState(() => _selectedReportType = val),
@@ -145,9 +141,13 @@ class _UploadReportViewBodyState extends State<_UploadReportViewBody> {
                           height: 44,
                           child: ElevatedButton(
                             onPressed: vmUpload.isLoading ? null : () async {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Media Upload feature coming soon!')),
-                              );
+                              final success = await vmUpload.uploadReport(event: _selectedEvent, type: _selectedReportType ?? 'General');
+                              if (success && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Report uploaded successfully!')));
+                                Navigator.pop(context);
+                              } else if (vmUpload.errorMessage != null && context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vmUpload.errorMessage!)));
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1E5BB8),

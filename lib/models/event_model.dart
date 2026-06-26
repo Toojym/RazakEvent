@@ -51,6 +51,8 @@ class EventModel {
     this.category = 'Other',
   });
 
+  String? get displayImageUrl => posterUrl ?? headerUrl ?? (imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim());
+
   Map<String, dynamic> toMap() => {
     'title': title,
     'description': description,

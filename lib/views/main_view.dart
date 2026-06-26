@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../repositories/event_repository.dart';
+import '../viewmodels/chat_assistant_viewmodel.dart';
 import '../viewmodels/home_viewmodel.dart';
 import 'home_view.dart';
 import 'organizer_home_view.dart';
@@ -38,26 +39,20 @@ class _MainViewState extends State<MainView> {
         statusBarIconBrightness: Brightness.light,
       ),
     );
-    _loadUser();
+    _loadUserRole();
   }
 
-  Future<void> _loadUser() async {
-    try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid != null) {
-        final user = await UserRepository().getUser(uid);
-        if (mounted) {
-          setState(() {
-            _user = user;
-            _isLoadingUser = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() => _isLoadingUser = false);
-        }
+  Future<void> _loadUserRole() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      final user = await UserRepository().getUser(uid);
+      if (mounted) {
+        setState(() {
+          _user = user;
+          _isLoadingUser = false;
+        });
       }
-    } catch (e) {
+    } else {
       if (mounted) {
         setState(() => _isLoadingUser = false);
       }
@@ -80,8 +75,11 @@ class _MainViewState extends State<MainView> {
 
     final bool isOrganizer = _user?.isOrganizer ?? false;
 
-    return ChangeNotifierProvider(
-      create: (_) => HomeViewModel(EventRepository()),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => HomeViewModel(EventRepository())),
+        ChangeNotifierProvider(create: (_) => ChatAssistantViewModel()),
+      ],
       child: Scaffold(
         backgroundColor: const Color(0xFF0A0A0A),
         extendBody: true, // lets content slide under the nav bar

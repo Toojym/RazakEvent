@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import '../models/report_model.dart';
 import '../models/event_model.dart';
 import '../repositories/report_repository.dart';
+import '../repositories/storage_repository.dart';
 
 class UploadReportViewModel extends ChangeNotifier {
   final ReportRepository _reportRepo = ReportRepository();
@@ -24,6 +25,7 @@ class UploadReportViewModel extends ChangeNotifier {
       final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
+        withData: true,
       );
       if (result != null && result.files.isNotEmpty) {
         _selectedFile = result.files.first;
@@ -51,7 +53,7 @@ class UploadReportViewModel extends ChangeNotifier {
       return false;
     }
 
-    if (_selectedFile == null) {
+    if (_selectedFile == null || _selectedFile!.bytes == null) {
       _errorMessage = "Please select a file to upload.";
       notifyListeners();
       return false;
@@ -66,7 +68,7 @@ class UploadReportViewModel extends ChangeNotifier {
       if (user == null) throw Exception("User not logged in");
 
       final fileName = _selectedFile!.name;
-      final fileUrl = "";
+      final fileUrl = await StorageRepository().uploadReportAttachment(_selectedFile!.bytes!, fileName);
 
       final report = ReportModel(
         reportId: '',

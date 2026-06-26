@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
-import '../models/date_filter.dart';
 import '../repositories/event_repository.dart';
 import '../repositories/report_repository.dart';
 
@@ -19,9 +18,9 @@ class AdminHomeViewModel extends ChangeNotifier {
   bool _isLoading = true;
 
   AdminHomeViewModel(this._eventRepo) {
-    // Watch all upcoming events system-wide
+    // Watch all events system-wide
     _eventSub = _eventRepo
-        .watchEvents(filter: const DateFilter.upcoming())
+        .watchEvents()
         .listen((events) {
           _events = events;
           _isLoading = false;
@@ -35,9 +34,7 @@ class AdminHomeViewModel extends ChangeNotifier {
     _reportSub = _reportRepo.watchAllReports().listen((reports) {
       _uploadedReportsCount = reports.length;
       notifyListeners();
-    }, onError: (error) {
-      // Ignore index or permission errors gracefully
-    });
+    }, onError: (error) {});
   }
 
   @override
@@ -51,10 +48,16 @@ class AdminHomeViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   /// Total active (upcoming) events across the entire system.
-  int get activeEventsCount => _events.length;
+  int get activeEventsCount {
+    final now = DateTime.now().subtract(const Duration(hours: 1));
+    return _events.where((e) => e.date.isAfter(now)).length;
+  }
 
   /// All upcoming events (for navigation to an events list).
-  List<EventModel> get allUpcomingEvents => _events;
+  List<EventModel> get allUpcomingEvents {
+    final now = DateTime.now().subtract(const Duration(hours: 1));
+    return _events.where((e) => e.date.isAfter(now)).toList();
+  }
 
   /// Total uploaded reports system-wide.
   int get uploadedReportsCount => _uploadedReportsCount;

@@ -16,23 +16,27 @@ class ReportRepository {
     final query = await _firestore
         .collection('reports')
         .where('uploaderId', isEqualTo: organizerId)
-        .orderBy('uploadedAt', descending: true)
         .get();
 
-    return query.docs
+    final list = query.docs
         .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
         .toList();
+    list.sort((a, b) => b.uploadedAt.compareTo(a.uploadedAt));
+    return list;
   }
 
   Stream<List<ReportModel>> watchReportsForOrganizer(String organizerId) {
     return _firestore
         .collection('reports')
         .where('uploaderId', isEqualTo: organizerId)
-        .orderBy('uploadedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
-            .toList());
+        .map((snapshot) {
+      final list = snapshot.docs
+          .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
+          .toList();
+      list.sort((a, b) => b.uploadedAt.compareTo(a.uploadedAt));
+      return list;
+    });
   }
 
   /// Streams all reports system-wide (used by admin dashboard).
@@ -62,12 +66,13 @@ class ReportRepository {
     final snapshot = await _firestore
         .collection('reports')
         .where('eventId', isEqualTo: eventId)
-        .orderBy('uploadedAt', descending: true)
         .get();
 
-    return snapshot.docs
+    final list = snapshot.docs
         .map((doc) => ReportModel.fromMap(doc.data(), doc.id))
         .toList();
+    list.sort((a, b) => b.uploadedAt.compareTo(a.uploadedAt));
+    return list;
   }
 
   /// Updates the approval status of a report ('pending', 'approved', 'denied').

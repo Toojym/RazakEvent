@@ -197,14 +197,14 @@ class _EventCard extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),
-              image: event.imageUrl != null
+              image: event.displayImageUrl != null
                   ? DecorationImage(
-                      image: NetworkImage(event.imageUrl!),
+                      image: NetworkImage(event.displayImageUrl!),
                       fit: BoxFit.cover,
                     )
                   : null,
             ),
-            child: event.imageUrl == null
+            child: event.displayImageUrl == null
                 ? const Center(
                     child: Icon(Icons.event, color: Colors.white24, size: 48),
                   )

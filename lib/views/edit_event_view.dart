@@ -208,19 +208,24 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
                           label: 'Upload Paperwork',
                           alignTop: true,
                           child: GestureDetector(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('File picker coming soon!')),
-                              );
-                            },
+                            onTap: () => vm.pickPaperwork(),
                             child: Container(
                               height: 80,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Center(
-                                child: Icon(Icons.upload_outlined, color: Colors.black),
+                              child: Center(
+                                child: vm.paperworkFile != null
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          vm.paperworkFile!.name,
+                                          style: const TextStyle(color: Colors.black, fontSize: 12),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    : const Icon(Icons.upload_outlined, color: Colors.black),
                               ),
                             ),
                           ),
@@ -229,19 +234,24 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
                           label: 'Upload Event Poster',
                           alignTop: true,
                           child: GestureDetector(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Image picker coming soon!')),
-                              );
-                            },
+                            onTap: () => vm.pickImage(true),
                             child: Container(
                               height: 80,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Center(
-                                child: Icon(Icons.upload_outlined, color: Colors.black),
+                              child: Center(
+                                child: vm.posterImage != null
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          vm.posterImage!.name,
+                                          style: const TextStyle(color: Colors.black, fontSize: 12),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    : const Icon(Icons.upload_outlined, color: Colors.black),
                               ),
                             ),
                           ),
@@ -250,19 +260,24 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
                           label: 'Upload Event Header',
                           alignTop: true,
                           child: GestureDetector(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Image picker coming soon!')),
-                              );
-                            },
+                            onTap: () => vm.pickImage(false),
                             child: Container(
                               height: 80,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Center(
-                                child: Icon(Icons.upload_outlined, color: Colors.black),
+                              child: Center(
+                                child: vm.headerImage != null
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          vm.headerImage!.name,
+                                          style: const TextStyle(color: Colors.black, fontSize: 12),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    : const Icon(Icons.upload_outlined, color: Colors.black),
                               ),
                             ),
                           ),
