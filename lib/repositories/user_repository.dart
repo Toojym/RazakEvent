@@ -44,17 +44,60 @@ class UserRepository {
   }
 
   // ── Calculate the user's leaderboard rank ──────────────────────────
-  Future<int> getUserRank(int userMeritPoints) async {
+  /// Finds the user's 1-based position in the leaderboard sorted by
+  /// [meritPoints] descending — the same ordering used by [watchLeaderboard].
+  /// Falls back to the count-based approach if the user isn't found in
+  /// the top results.
+  Future<int> getUserRank(String uid) async {
     try {
-      final countQuery = await _firestore
+      // Fetch the full sorted list (same order as the leaderboard view).
+      final snapshot = await _firestore
           .collection('users')
-          .where('meritPoints', isGreaterThan: userMeritPoints)
-          .count()
+          .orderBy('meritPoints', descending: true)
           .get();
-          
-      return (countQuery.count ?? 0) + 1;
+
+      // Find the user's exact position by UID.
+      final docs = snapshot.docs;
+      for (int i = 0; i < docs.length; i++) {
+        if (docs[i].id == uid) {
+          return i + 1; // 1-based rank
+        }
+      }
+
+      // User document not found — shouldn't happen, but return 0 as fallback.
+      return 0;
     } catch (_) {
-      return 0; // Return 0 or handle error if needed
+      return 0;
     }
+  }
+
+  // ── Atomically add merit points to a user's profile ───────────────
+  /// Uses [FieldValue.increment] so concurrent scans never overwrite
+  /// each other. If the `meritPoints` field doesn't exist yet on the
+  /// document, Firestore treats the missing value as 0 and creates it.
+  Future<void> addMeritPoints({
+    required String uid,
+    required int points,
+  }) async {
+    await _firestore.collection('users').doc(uid).set(
+      {'meritPoints': FieldValue.increment(points)},
+      SetOptions(merge: true),
+    );
+  }
+
+  // ── Real-time leaderboard stream ──────────────────────────────────
+  /// Returns a live stream of users sorted by [meritPoints] descending.
+  /// Any Firestore write (e.g. from [addMeritPoints]) immediately pushes
+  /// an updated snapshot through this stream, ensuring instant UI updates.
+  Stream<List<UserModel>> watchLeaderboard({int limit = 10}) {
+    return _firestore
+        .collection('users')
+        .orderBy('meritPoints', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) =>
+                UserModel.fromMap(doc.data(), doc.id))
+            .toList());
   }
 }

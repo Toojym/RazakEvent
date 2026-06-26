@@ -55,6 +55,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<String?> signUp({
     required String name,
     required String matric,
+    required String faculty,
     required String email,
     required String password,
     required String confirmPassword,
@@ -65,6 +66,10 @@ class AuthViewModel extends ChangeNotifier {
     
     if (matric.trim().isEmpty) {
       return 'Please enter your matric / staff number.';
+    }
+
+    if (faculty.trim().isEmpty) {
+      return 'Please select your faculty.';
     }
 
     final emailError = _validateUTMEmail(email);
@@ -91,7 +96,7 @@ class AuthViewModel extends ChangeNotifier {
             name: name.trim(),
             matric: matric.trim().toUpperCase(),
             kolej: 'Kolej Tun Razak',
-            faculty: 'Faculty of Computing',
+            faculty: faculty.trim(),
             meritPoints: 0,
             role: 'student',
             email: email.trim(),

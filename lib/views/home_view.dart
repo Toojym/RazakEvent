@@ -3,7 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
+import '../utils/app_theme.dart';
 import '../viewmodels/home_viewmodel.dart';
+import 'chat_assistant_modal.dart';
+import 'event_detail_view.dart';
 
 // ════════════════════════════════════════════════════════════════════
 // HOME VIEW
@@ -18,15 +21,30 @@ class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   static const _bgColor = Color(0xFF0A0A0A);
-  static const _cardRadius = 12.0;
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<HomeViewModel>();
 
-    return Container(
-      color: _bgColor,
-      child: CustomScrollView(
+    return Scaffold(
+      backgroundColor: _bgColor,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => ChatAssistantModal(activeEvents: vm.allUpcomingEvents),
+          );
+        },
+        backgroundColor: AppTheme.primaryBlue,
+        icon: const Icon(Icons.smart_toy_outlined, color: Colors.white),
+        label: const Text(
+          "Ask RazakAI",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: CustomScrollView(
         slivers: [
           // ── Featured banner ──────────────────────────────────────
           SliverToBoxAdapter(
@@ -100,11 +118,11 @@ class _FeaturedBanner extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           // ── Background image ─────────────────────────────────────
-          if (event?.imageUrl != null)
+          if (event?.displayImageUrl != null)
             Image.network(
-              event!.imageUrl!,
+              event!.displayImageUrl!,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const _BannerPlaceholder(),
+              errorBuilder: (_, _, _) => const _BannerPlaceholder(),
             )
           else
             const _BannerPlaceholder(),
@@ -237,7 +255,10 @@ class _BannerEventInfo extends StatelessWidget {
         // "Join Us!" button
         ElevatedButton(
           onPressed: () {
-            // TODO: navigate to EventDetailView(event)
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => EventDetailView(event: event)),
+            );
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2E6BE6),
@@ -309,7 +330,7 @@ class _SectionHeader extends StatelessWidget {
               ),
             ),
           ),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );
@@ -421,7 +442,7 @@ class _HorizontalEventList extends StatelessWidget {
     if (events.isEmpty) return _buildEmpty();
 
     return SizedBox(
-      height: 150,
+      height: 250,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -433,15 +454,15 @@ class _HorizontalEventList extends StatelessWidget {
 
   Widget _buildSkeletons() {
     return SizedBox(
-      height: 150,
+      height: 250,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: 3,
-        separatorBuilder: (context, index) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => Container(
-          width: 140,
-          height: 150,
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (_, _) => Container(
+          width: 200,
+          height: 250,
           decoration: BoxDecoration(
             color: const Color(0xFF1E1E1E),
             borderRadius: BorderRadius.circular(12),
@@ -473,27 +494,29 @@ class _EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Navigator.push(context, MaterialPageRoute(
-        //   builder: (_) => EventDetailView(event: event),
-        // ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => EventDetailView(event: event)),
+        );
       },
-      child: Container(
-        width: 140,
-        height: 150,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: const Color(0xFF1E1E1E),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: event.imageUrl != null
-              ? Image.network(
-                  event.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => _CardPlaceholder(event: event),
-                )
-              : _CardPlaceholder(event: event),
+      child: AspectRatio(
+        aspectRatio: 4 / 5,
+        child: Container(
+          margin: const EdgeInsets.only(right: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: const Color(0xFF1E1E1E),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: event.displayImageUrl != null
+                ? Image.network(
+                    event.displayImageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => _CardPlaceholder(event: event),
+                  )
+                : _CardPlaceholder(event: event),
+          ),
         ),
       ),
     );

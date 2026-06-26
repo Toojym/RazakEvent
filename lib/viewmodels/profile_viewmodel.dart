@@ -3,17 +3,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/attendance_repository.dart';
+import '../repositories/registration_repository.dart';
 
 class ProfileViewModel extends ChangeNotifier {
   final UserRepository _userRepo;
   final AttendanceRepository _attendanceRepo;
+  final RegistrationRepository _registrationRepo;
 
   ProfileViewModel({
     required UserRepository userRepo,
     required AttendanceRepository attendanceRepo,
+    RegistrationRepository? registrationRepo,
   })  : _userRepo = userRepo,
-        _attendanceRepo = attendanceRepo {
+        _attendanceRepo = attendanceRepo,
+        _registrationRepo = registrationRepo ?? RegistrationRepository() {
     _loadProfileData();
+  }
+
+  bool _isDisposed = false;
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 
   bool _isLoading = true;
@@ -28,6 +40,9 @@ class ProfileViewModel extends ChangeNotifier {
   int _eventsParticipated = 0;
   int get eventsParticipated => _eventsParticipated;
 
+  int _eventsRegistered = 0;
+  int get eventsRegistered => _eventsRegistered;
+
   int _eventsVolunteered = 0;
   int get eventsVolunteered => _eventsVolunteered;
 
@@ -37,7 +52,7 @@ class ProfileViewModel extends ChangeNotifier {
   Future<void> _loadProfileData() async {
     _isLoading = true;
     _errorMessage = null;
-    notifyListeners();
+    if (!_isDisposed) notifyListeners();
 
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
@@ -64,9 +79,15 @@ class ProfileViewModel extends ChangeNotifier {
           debugPrint('Error getting volunteered count: $e');
         }
 
+        try {
+          _eventsRegistered = await _registrationRepo.getRegistrationCount(uid);
+        } catch (e) {
+          debugPrint('Error getting registration count: $e');
+        }
+
         // Rank calculation
         if (_user != null) {
-          _rank = await _userRepo.getUserRank(_user!.meritPoints);
+          _rank = await _userRepo.getUserRank(uid);
         }
       }
     } catch (e) {
@@ -74,7 +95,7 @@ class ProfileViewModel extends ChangeNotifier {
       debugPrint('Error loading profile data: $e');
     } finally {
       _isLoading = false;
-      notifyListeners();
+      if (!_isDisposed) notifyListeners();
     }
   }
 

@@ -29,6 +29,26 @@ class _AuthViewState extends State<AuthView> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
+  String? _selectedFaculty;
+
+  // ── All UTM faculties & schools ──────────────────────────────────
+  static const List<String> _utmFaculties = [
+    'Faculty of Built Environment & Surveying',
+    'Faculty of Chemical & Energy Engineering',
+    'Faculty of Civil Engineering',
+    'Faculty of Computing',
+    'Faculty of Electrical Engineering',
+    'Faculty of Mechanical Engineering',
+    'Faculty of Science',
+    'Faculty of Social Sciences & Humanities',
+    'Faculty of Educational Sciences and Technology',
+    'Faculty of Management',
+    'Faculty of Artificial Intelligence',
+    'Azman Hashim International Business School',
+    'Razak Faculty of Technology & Informatics',
+    'Malaysia-Japan International Institute of Technology',
+  ];
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -47,6 +67,7 @@ class _AuthViewState extends State<AuthView> {
     _emailController.clear();
     _passwordController.clear();
     _confirmPassController.clear();
+    setState(() => _selectedFaculty = null);
     vm.toggleLoginMode();
   }
 
@@ -63,6 +84,7 @@ class _AuthViewState extends State<AuthView> {
       error = await vm.signUp(
         name: _nameController.text,
         matric: _matricController.text,
+        faculty: _selectedFaculty ?? '',
         email: _emailController.text,
         password: _passwordController.text,
         confirmPassword: _confirmPassController.text,
@@ -188,6 +210,10 @@ class _AuthViewState extends State<AuthView> {
                     : null,
               ),
               const SizedBox(height: 14),
+
+              // ── Faculty (Sign Up only) ────────────────────
+              _buildFacultyDropdown(),
+              const SizedBox(height: 14),
             ],
 
             // ── UTM Email (both modes — login uses this) ─────
@@ -312,6 +338,78 @@ class _AuthViewState extends State<AuthView> {
           ],
         ),
       ),
+    );
+  }
+
+  // ── Faculty dropdown ──────────────────────────────────────────────
+  Widget _buildFacultyDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Text(
+          'Faculty / School',
+          style: TextStyle(
+            color: AppTheme.textDark,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 6),
+        DropdownButtonFormField<String>(
+          initialValue: _selectedFaculty,
+          isExpanded: true,
+          dropdownColor: Colors.white,
+          icon: const Icon(Icons.arrow_drop_down, color: AppTheme.textHint),
+          style: const TextStyle(fontSize: 14, color: AppTheme.textDark),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFDDDDDD)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFDDDDDD)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  const BorderSide(color: AppTheme.primaryBlue, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.redAccent),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  const BorderSide(color: Colors.redAccent, width: 1.5),
+            ),
+          ),
+          hint: const Text(
+            'Select your faculty',
+            style: TextStyle(color: AppTheme.textHint, fontSize: 14),
+          ),
+          items: _utmFaculties
+              .map((f) => DropdownMenuItem(
+                    value: f,
+                    child: Text(
+                      f,
+                      style: const TextStyle(color: AppTheme.textDark, fontSize: 14),
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) => setState(() => _selectedFaculty = value),
+          validator: (v) =>
+              (v == null || v.isEmpty) ? 'Please select your faculty' : null,
+        ),
+      ],
     );
   }
 

@@ -13,7 +13,7 @@ class UserModel {
     required this.name,
     required this.matric,
     required this.kolej,
-    this.faculty = 'Faculty of Computing',
+    this.faculty = '',
     required this.meritPoints,
     required this.role,
     required this.email,
@@ -36,13 +36,14 @@ class UserModel {
       name: map['name'] ?? '',
       matric: map['matric'] ?? '',
       kolej: map['kolej'] ?? '',
-      faculty: map['faculty'] ?? 'Faculty of Computing',
+      faculty: map['faculty'] ?? '',
       meritPoints: map['meritPoints'] ?? 0,
       role: map['role'] ?? 'student',
       email: map['email'] ?? '',
     );
   }
 
+  bool get isAdmin => role == 'admin';
   bool get isOrganizer => role == 'organizer';
   bool get isStudent => role == 'student';
 }

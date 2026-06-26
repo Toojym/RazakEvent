@@ -5,6 +5,7 @@ import '../utils/app_theme.dart';
 import '../viewmodels/scan_viewmodel.dart';
 import '../repositories/event_repository.dart';
 import '../repositories/attendance_repository.dart';
+import '../repositories/user_repository.dart';
 import 'logo_view.dart';
 
 /// QR Scanner screen. Matches the Figma design:
@@ -22,6 +23,7 @@ class ScanView extends StatelessWidget {
       create: (_) => ScanViewModel(
         eventRepo: EventRepository(),
         attendanceRepo: AttendanceRepository(),
+        userRepo: UserRepository(),
       ),
       child: const _ScanViewBody(),
     );
@@ -41,6 +43,11 @@ class _ScanViewBodyState extends State<_ScanViewBody> {
     facing: CameraFacing.back,
   );
 
+  /// Local debounce to prevent rapid-fire hardware callbacks from even
+  /// reaching the viewmodel.
+  DateTime? _lastDetectTime;
+  static const _kDetectDebounce = Duration(milliseconds: 500);
+
   @override
   void dispose() {
     _scannerController.dispose();
@@ -49,6 +56,13 @@ class _ScanViewBodyState extends State<_ScanViewBody> {
 
   void _onDetect(BarcodeCapture capture, ScanViewModel vm) {
     if (vm.status != ScanStatus.scanning) return;
+
+    final now = DateTime.now();
+    if (_lastDetectTime != null &&
+        now.difference(_lastDetectTime!) < _kDetectDebounce) {
+      return; // hardware debounce – too soon since last detection
+    }
+    _lastDetectTime = now;
 
     final List<Barcode> barcodes = capture.barcodes;
     if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {

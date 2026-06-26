@@ -101,7 +101,28 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE65100).withValues(alpha: 0.25),
+                    border: Border.all(color: Colors.orangeAccent),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 24),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'IMPORTANT: University mail servers (@graduate.utm.my) often send these links to your SPAM or JUNK folder. Please check there!',
+                          style: TextStyle(color: Colors.orangeAccent, fontSize: 12, fontWeight: FontWeight.w600, height: 1.4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 const Text(
                   'Please click the link to activate your account. This screen will automatically update once verified.',
                   textAlign: TextAlign.center,

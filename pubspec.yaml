@@ -41,6 +41,13 @@ dependencies:
   provider: ^6.1.5+1
   uuid: ^4.5.3
   mobile_scanner: ^7.2.0
+  qr_flutter: ^4.1.0
+  image_gallery_saver_plus: ^5.0.0
+  firebase_storage: ^13.4.2
+  file_picker: ^11.0.2
+  image_picker: ^1.2.2
+  url_launcher: ^6.3.1
+  google_generative_ai: ^0.4.6
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +59,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -93,3 +101,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/Logo.png"
