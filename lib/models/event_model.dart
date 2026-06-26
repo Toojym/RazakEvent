@@ -54,6 +54,7 @@ class EventModel {
   });
 
   String? get displayImageUrl => posterUrl;
+  bool get hasPaperworkAttached => hasPaperwork || (paperworkUrl != null && paperworkUrl!.isNotEmpty);
 
   Map<String, dynamic> toMap() => {
     'title': title,
@@ -90,6 +91,7 @@ class EventModel {
   }
 
   factory EventModel.fromMap(Map<String, dynamic> map, String documentId) {
+    final pUrl = _cleanUrl(map['paperworkUrl'] ?? map['fileUrl']);
     return EventModel(
       eventId: documentId,
       title: map['title'] ?? '',
@@ -104,8 +106,8 @@ class EventModel {
       crewQrCodeData: map['crewQrCodeData'] ?? '',
 
       posterUrl: _cleanUrl(map['posterUrl']),
-      hasPaperwork: map['hasPaperwork'] ?? false,
-      paperworkUrl: _cleanUrl(map['paperworkUrl'] ?? map['fileUrl']),
+      hasPaperwork: (map['hasPaperwork'] == true) || (pUrl != null),
+      paperworkUrl: pUrl,
       maxCapacity: map['maxCapacity'],
       category: map['category'] ?? 'Other',
       fee: _parseFee(map['fee'] ?? map['registrationFee']),

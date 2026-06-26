@@ -32,7 +32,7 @@ class AdminAllPaperworkViewModel extends ChangeNotifier {
     try {
       final allEvents = await _eventRepo.getAllEvents();
       _paperworkEvents = allEvents
-          .where((e) => e.hasPaperwork)
+          .where((e) => e.hasPaperworkAttached)
           .toList()
         ..sort((a, b) => b.date.compareTo(a.date));
     } catch (e) {

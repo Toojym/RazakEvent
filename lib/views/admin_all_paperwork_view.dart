@@ -111,12 +111,20 @@ class _EventPaperworkRow extends StatelessWidget {
     return InkWell(
       onTap: () async {
         final url = item.paperworkUrl;
-        if (url != null && await canLaunchUrl(Uri.parse(url))) {
-          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        if (url != null && url.trim().isNotEmpty) {
+          try {
+            await launchUrl(Uri.parse(url.trim()), mode: LaunchMode.externalApplication);
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Could not open paperwork document.')),
+              );
+            }
+          }
         } else {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Could not open paperwork document.')),
+              const SnackBar(content: Text('No paperwork document attached to this event.')),
             );
           }
         }
