@@ -4,9 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
 import '../repositories/event_repository.dart';
 import '../repositories/storage_repository.dart';
-import '../repositories/report_repository.dart';
 import '../models/event_model.dart';
-import '../models/report_model.dart';
+
 
 class CreateEventViewModel extends ChangeNotifier {
   final EventRepository _eventRepository = EventRepository();
@@ -80,6 +79,7 @@ class CreateEventViewModel extends ChangeNotifier {
       final StorageRepository storageRepo = StorageRepository();
 
       String? finalPosterUrl;
+      String? finalPaperworkUrl;
       bool finalHasPaperwork = false;
 
       // Upload poster image
@@ -90,19 +90,8 @@ class CreateEventViewModel extends ChangeNotifier {
 
       // Upload paperwork document
       if (_paperworkFile != null && _paperworkFile!.bytes != null) {
-        final pwUrl = await storageRepo.uploadEventPaperwork(_paperworkFile!.bytes!, _paperworkFile!.name);
+        finalPaperworkUrl = await storageRepo.uploadEventPaperwork(_paperworkFile!.bytes!, _paperworkFile!.name);
         finalHasPaperwork = true;
-        await ReportRepository().saveReport(ReportModel(
-          reportId: '',
-          eventId: eventId,
-          eventName: title.trim(),
-          uploaderId: user.uid,
-          type: 'Proposal Paperwork',
-          uploadedAt: DateTime.now(),
-          fileUrl: pwUrl,
-          fileName: _paperworkFile!.name,
-          approvalStatus: 'approved',
-        ));
       }
 
       final event = EventModel(
@@ -120,6 +109,7 @@ class CreateEventViewModel extends ChangeNotifier {
         maxCapacity: maxCapacity,
         posterUrl: finalPosterUrl,
         hasPaperwork: finalHasPaperwork,
+        paperworkUrl: finalPaperworkUrl,
         category: category,
         fee: fee,
       );

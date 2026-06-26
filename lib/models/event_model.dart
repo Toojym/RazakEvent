@@ -27,6 +27,7 @@ class EventModel {
 
   final String? posterUrl;
   final bool hasPaperwork;
+  final String? paperworkUrl;
   final int? maxCapacity;
   final String category; // Sports | Academic | Arts | Cultural | Other
   final double fee;
@@ -46,6 +47,7 @@ class EventModel {
 
     this.posterUrl,
     this.hasPaperwork = false,
+    this.paperworkUrl,
     this.maxCapacity,
     this.category = 'Other',
     this.fee = 0.0,
@@ -67,6 +69,7 @@ class EventModel {
 
     'posterUrl': posterUrl,
     'hasPaperwork': hasPaperwork,
+    'paperworkUrl': paperworkUrl,
     'maxCapacity': maxCapacity,
     'category': category,
     'fee': fee,
@@ -102,9 +105,11 @@ class EventModel {
 
       posterUrl: _cleanUrl(map['posterUrl']),
       hasPaperwork: map['hasPaperwork'] ?? false,
+      paperworkUrl: _cleanUrl(map['paperworkUrl'] ?? map['fileUrl']),
       maxCapacity: map['maxCapacity'],
       category: map['category'] ?? 'Other',
       fee: _parseFee(map['fee'] ?? map['registrationFee']),
     );
   }
 }
+

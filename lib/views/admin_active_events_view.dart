@@ -6,7 +6,7 @@ import '../models/event_model.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/admin_events_viewmodel.dart';
 import 'logo_view.dart';
-import 'admin_event_reports_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'view_registered_participants_view.dart';
 import 'edit_event_view.dart';
 
@@ -152,13 +152,17 @@ class _ActiveEventRow extends StatelessWidget {
           const SizedBox(width: 8),
           _BlueIconButton(
             icon: Icons.folder_shared,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AdminEventReportsView(event: event),
-                ),
-              );
+            onPressed: () async {
+              final url = event.paperworkUrl;
+              if (url != null && await canLaunchUrl(Uri.parse(url))) {
+                await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No paperwork document uploaded for this event.')),
+                  );
+                }
+              }
             },
           ),
           const SizedBox(width: 8),

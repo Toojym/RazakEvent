@@ -40,12 +40,5 @@ class StorageRepository {
     final uploadTask = await ref.putData(bytes, metadata);
     return await uploadTask.ref.getDownloadURL();
   }
-
-  Future<String> uploadReportAttachment(Uint8List bytes, String fileName) async {
-    final uniqueName = '${_uuid.v4()}_$fileName';
-    final ref = _storage.ref().child('reports/$uniqueName');
-    
-    final uploadTask = await ref.putData(bytes);
-    return await uploadTask.ref.getDownloadURL();
-  }
 }
+

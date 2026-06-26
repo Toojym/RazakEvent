@@ -7,7 +7,6 @@ import '../viewmodels/admin_home_viewmodel.dart';
 import 'admin_active_events_view.dart';
 import 'admin_all_paperwork_view.dart';
 import 'admin_past_events_view.dart';
-import 'admin_report_filter_view.dart';
 import 'logo_view.dart';
 
 /// Admin Home View
@@ -16,8 +15,8 @@ import 'logo_view.dart';
 /// - "RazakEvent" logo at the top
 /// - Large "Active Events" glassmorphic card with count
 /// - Gold/amber "View Events" button
-/// - Two smaller cards: "Uploaded Reports" and "Uploaded Paperwork" with red badges
-/// - Two red action buttons: "View Reports" and "View Paperworks"
+/// - Single card: "Uploaded Paperwork" with badge
+/// - Red action button: "View Paperworks"
 class AdminHomeView extends StatelessWidget {
   const AdminHomeView({super.key});
 
@@ -69,63 +68,27 @@ class AdminHomeView extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
 
-                        // ── Reports and Paperwork Cards Row ─────────
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _BadgedGlassCard(
-                                title: 'Uploaded\nReports',
-                                value: '${vm.uploadedReportsCount}',
-                                badgeCount: vm.uploadedReportsCount,
-                                height: 160,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _BadgedGlassCard(
-                                title: 'Uploaded\nPaperwork',
-                                value: '${vm.uploadedPaperworkCount}',
-                                badgeCount: vm.uploadedPaperworkCount,
-                                height: 160,
-                              ),
-                            ),
-                          ],
+                        // ── Uploaded Paperwork Card (full width) ────
+                        _BadgedGlassCard(
+                          title: 'Uploaded\nPaperwork',
+                          value: '${vm.uploadedPaperworkCount}',
+                          badgeCount: vm.uploadedPaperworkCount,
+                          height: 160,
                         ),
                         const SizedBox(height: 12),
 
-                        // ── View Reports & View Paperworks Buttons ──
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _ActionButton(
-                                label: 'View Reports',
-                                color: const Color(0xFFC62828),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const AdminReportFilterView(),
-                                    ),
-                                  );
-                                },
+                        // ── View Paperworks Button ──────────────────
+                        _ActionButton(
+                          label: 'View Paperworks',
+                          color: const Color(0xFFC62828),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AdminAllPaperworkView(),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _ActionButton(
-                                label: 'View Paperworks',
-                                color: const Color(0xFFC62828),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const AdminAllPaperworkView(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ],
                     ),

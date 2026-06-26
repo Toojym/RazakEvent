@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
-import '../models/report_model.dart';
 import '../repositories/event_repository.dart';
-import '../repositories/report_repository.dart';
 
 /// ViewModel shared by admin active events and admin past events list pages.
-/// Fetches all events and all reports, then partitions events into
+/// Fetches all events, then partitions events into
 /// active (upcoming / currently running) and past (already finished).
 class AdminEventsViewModel extends ChangeNotifier {
   final EventRepository _eventRepo = EventRepository();
-  final ReportRepository _reportRepo = ReportRepository();
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
@@ -19,10 +16,6 @@ class AdminEventsViewModel extends ChangeNotifier {
 
   List<EventModel> _pastEvents = [];
   List<EventModel> get pastEvents => _pastEvents;
-
-  /// Maps eventId → earliest ReportModel for that event.
-  /// Used to compute "Uploaded X days early/late" on past events.
-  Map<String, ReportModel> _earliestReportByEvent = {};
 
   bool _isDisposed = false;
 
@@ -42,17 +35,6 @@ class AdminEventsViewModel extends ChangeNotifier {
 
     try {
       final allEvents = await _eventRepo.getAllEvents();
-      final allReports = await _reportRepo.getAllReportsOnce();
-
-      // Build a map: eventId → earliest report upload date
-      final Map<String, ReportModel> reportMap = {};
-      for (final report in allReports) {
-        if (!reportMap.containsKey(report.eventId) ||
-            report.uploadedAt.isBefore(reportMap[report.eventId]!.uploadedAt)) {
-          reportMap[report.eventId] = report;
-        }
-      }
-      _earliestReportByEvent = reportMap;
 
       final now = DateTime.now();
       _activeEvents = [];
@@ -80,21 +62,10 @@ class AdminEventsViewModel extends ChangeNotifier {
     }
   }
 
-  /// Returns a human-readable string describing how early or late
-  /// the paperwork was uploaded relative to the event start date.
-  /// Returns null if no report was uploaded for this event.
+  /// Returns label indicating whether paperwork was attached.
   String? getPaperworkTimingLabel(EventModel event) {
-    final report = _earliestReportByEvent[event.eventId];
-    if (report == null) return null;
-
-    final diff = event.date.difference(report.uploadedAt).inDays;
-    if (diff > 0) {
-      return 'Uploaded $diff day${diff == 1 ? '' : 's'} early';
-    } else if (diff < 0) {
-      final absDiff = diff.abs();
-      return 'Uploaded $absDiff day${absDiff == 1 ? '' : 's'} late';
-    } else {
-      return 'Uploaded on event day';
-    }
+    if (!event.hasPaperwork) return null;
+    return 'Paperwork submitted';
   }
 }
+

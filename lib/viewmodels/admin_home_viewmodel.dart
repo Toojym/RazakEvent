@@ -2,19 +2,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import '../repositories/event_repository.dart';
-import '../repositories/report_repository.dart';
 
 /// ViewModel for the Admin Home dashboard.
-/// Watches all events and reports system-wide (not scoped to a single organizer).
+/// Watches all events system-wide.
 class AdminHomeViewModel extends ChangeNotifier {
   final EventRepository _eventRepo;
-  final ReportRepository _reportRepo = ReportRepository();
 
   StreamSubscription<List<EventModel>>? _eventSub;
-  StreamSubscription? _reportSub;
 
   List<EventModel> _events = [];
-  int _uploadedReportsCount = 0;
   bool _isLoading = true;
 
   AdminHomeViewModel(this._eventRepo) {
@@ -29,18 +25,11 @@ class AdminHomeViewModel extends ChangeNotifier {
           _isLoading = false;
           notifyListeners();
         });
-
-    // Watch all reports system-wide
-    _reportSub = _reportRepo.watchAllReports().listen((reports) {
-      _uploadedReportsCount = reports.length;
-      notifyListeners();
-    }, onError: (error) {});
   }
 
   @override
   void dispose() {
     _eventSub?.cancel();
-    _reportSub?.cancel();
     super.dispose();
   }
 
@@ -59,10 +48,8 @@ class AdminHomeViewModel extends ChangeNotifier {
     return _events.where((e) => e.date.isAfter(now)).toList();
   }
 
-  /// Total uploaded reports system-wide.
-  int get uploadedReportsCount => _uploadedReportsCount;
-
   /// Total events that have paperwork uploaded.
   int get uploadedPaperworkCount =>
       _events.where((e) => e.hasPaperwork).length;
 }
+

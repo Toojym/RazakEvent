@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../models/event_model.dart';
-import '../models/report_model.dart';
 import '../repositories/event_repository.dart';
 import '../repositories/storage_repository.dart';
-import '../repositories/report_repository.dart';
 
 class EditEventViewModel extends ChangeNotifier {
   final EventRepository _repository = EventRepository();
   final StorageRepository _storageRepo = StorageRepository();
-  final ReportRepository _reportRepo = ReportRepository();
+
   
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -81,6 +78,7 @@ class EditEventViewModel extends ChangeNotifier {
       // Keep existing poster URL unless a new poster is picked
       String? finalPosterUrl = originalEvent.posterUrl;
       bool finalHasPaperwork = originalEvent.hasPaperwork;
+      String? finalPaperworkUrl = originalEvent.paperworkUrl;
 
       // Upload new poster if one was picked
       if (_posterFile != null && _posterFile!.bytes != null) {
@@ -90,22 +88,8 @@ class EditEventViewModel extends ChangeNotifier {
 
       // Upload new paperwork if one was picked
       if (_paperworkFile != null && _paperworkFile!.bytes != null) {
-        final pwUrl = await _storageRepo.uploadEventPaperwork(_paperworkFile!.bytes!, _paperworkFile!.name);
+        finalPaperworkUrl = await _storageRepo.uploadEventPaperwork(_paperworkFile!.bytes!, _paperworkFile!.name);
         finalHasPaperwork = true;
-        final currentUser = FirebaseAuth.instance.currentUser;
-        if (currentUser != null) {
-          await _reportRepo.saveReport(ReportModel(
-            reportId: '',
-            eventId: originalEvent.eventId,
-            eventName: title.trim(),
-            uploaderId: currentUser.uid,
-            type: 'Proposal Paperwork',
-            uploadedAt: DateTime.now(),
-            fileUrl: pwUrl,
-            fileName: _paperworkFile!.name,
-            approvalStatus: 'approved',
-          ));
-        }
       }
 
       final updatedEvent = EventModel(
@@ -120,6 +104,7 @@ class EditEventViewModel extends ChangeNotifier {
         attendeeQrCodeData: originalEvent.attendeeQrCodeData,
         createdBy: originalEvent.createdBy,
         hasPaperwork: finalHasPaperwork,
+        paperworkUrl: finalPaperworkUrl,
         posterUrl: finalPosterUrl,
         attendeeMeritPoints: originalEvent.attendeeMeritPoints,
         crewMeritPoints: originalEvent.crewMeritPoints,

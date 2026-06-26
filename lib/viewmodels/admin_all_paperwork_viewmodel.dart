@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
-import '../models/report_model.dart';
 import '../repositories/event_repository.dart';
-import '../repositories/report_repository.dart';
 
 /// ViewModel for the admin paperwork list page.
-/// Loads all events and their associated reports so the admin
-/// can browse paperwork per event.
+/// Loads all events that have uploaded paperwork attached.
 class AdminAllPaperworkViewModel extends ChangeNotifier {
   final EventRepository _eventRepo = EventRepository();
-  final ReportRepository _reportRepo = ReportRepository();
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
 
-  List<EventWithReports> _eventsWithReports = [];
-  List<EventWithReports> get eventsWithReports => _eventsWithReports;
+  List<EventModel> _paperworkEvents = [];
+  List<EventModel> get paperworkEvents => _paperworkEvents;
 
   bool _isDisposed = false;
 
@@ -35,23 +31,10 @@ class AdminAllPaperworkViewModel extends ChangeNotifier {
 
     try {
       final allEvents = await _eventRepo.getAllEvents();
-      final allReports = await _reportRepo.getAllReportsOnce();
-
-      // Group reports by eventId
-      final Map<String, List<ReportModel>> reportsByEvent = {};
-      for (final report in allReports) {
-        reportsByEvent.putIfAbsent(report.eventId, () => []).add(report);
-      }
-
-      // Build list — include events that have uploaded paperwork or reports
-      _eventsWithReports = allEvents
-          .where((e) => e.hasPaperwork || reportsByEvent.containsKey(e.eventId))
-          .map((e) => EventWithReports(
-                event: e,
-                reports: reportsByEvent[e.eventId] ?? [],
-              ))
+      _paperworkEvents = allEvents
+          .where((e) => e.hasPaperwork)
           .toList()
-        ..sort((a, b) => b.event.date.compareTo(a.event.date));
+        ..sort((a, b) => b.date.compareTo(a.date));
     } catch (e) {
       debugPrint('AdminAllPaperworkViewModel error: $e');
     } finally {
@@ -61,17 +44,3 @@ class AdminAllPaperworkViewModel extends ChangeNotifier {
   }
 }
 
-class EventWithReports {
-  final EventModel event;
-  final List<ReportModel> reports;
-
-  EventWithReports({required this.event, required this.reports});
-
-  int get totalReports => reports.length;
-  int get approvedCount =>
-      reports.where((r) => r.approvalStatus == 'approved').length;
-  int get deniedCount =>
-      reports.where((r) => r.approvalStatus == 'denied').length;
-  int get pendingCount =>
-      reports.where((r) => r.approvalStatus == 'pending').length;
-}

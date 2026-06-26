@@ -1,13 +1,14 @@
 import 'package:razak_event/widgets/custom_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/event_model.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/admin_all_paperwork_viewmodel.dart';
-import 'admin_event_reports_view.dart';
 import 'logo_view.dart';
 
 /// Admin page that lists all events that have uploaded paperwork.
-/// Clicking on an event navigates to the detailed paperwork view for that event.
+/// Clicking on an event launches the paperwork document.
 class AdminAllPaperworkView extends StatelessWidget {
   const AdminAllPaperworkView({super.key});
 
@@ -26,7 +27,7 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<AdminAllPaperworkViewModel>();
-    final events = vm.eventsWithReports;
+    final events = vm.paperworkEvents;
 
     return Scaffold(
       body: Stack(
@@ -102,19 +103,23 @@ class _Body extends StatelessWidget {
 
 // ── Single event row ────────────────────────────────────────────────────
 class _EventPaperworkRow extends StatelessWidget {
-  final EventWithReports item;
+  final EventModel item;
   const _EventPaperworkRow({required this.item});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AdminEventReportsView(event: item.event),
-          ),
-        );
+      onTap: () async {
+        final url = item.paperworkUrl;
+        if (url != null && await canLaunchUrl(Uri.parse(url))) {
+          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not open paperwork document.')),
+            );
+          }
+        }
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -126,7 +131,7 @@ class _EventPaperworkRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.event.title,
+                    item.title,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 13,
@@ -136,38 +141,20 @@ class _EventPaperworkRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        '${item.totalReports} total',
-                        style: const TextStyle(color: Colors.white70, fontSize: 10),
-                      ),
-                      const SizedBox(width: 8),
-                      if (item.pendingCount > 0) ...[
-                        const Text('• ', style: TextStyle(color: Colors.white54, fontSize: 10)),
-                        Text(
-                          '${item.pendingCount} pending',
-                          style: const TextStyle(color: Color(0xFFFFB74D), fontSize: 10),
-                        ),
-                      ],
-                      if (item.approvedCount > 0) ...[
-                        const Text(' • ', style: TextStyle(color: Colors.white54, fontSize: 10)),
-                        Text(
-                          '${item.approvedCount} approved',
-                          style: const TextStyle(color: Color(0xFF81C784), fontSize: 10),
-                        ),
-                      ],
-                    ],
+                  Text(
+                    item.location,
+                    style: const TextStyle(color: Colors.white70, fontSize: 11),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
             // Open icon
-            const Icon(Icons.chevron_right, color: Colors.white38, size: 20),
+            const Icon(Icons.open_in_new, color: Colors.white38, size: 18),
           ],
         ),
       ),
     );
   }
 }
+

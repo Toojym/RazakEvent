@@ -5,7 +5,7 @@ import '../repositories/user_repository.dart';
 import '../repositories/event_repository.dart';
 
 /// ViewModel for the Admin Profile page.
-/// Loads the admin user info plus system-wide event & report statistics.
+/// Loads the admin user info plus system-wide event statistics.
 class AdminProfileViewModel extends ChangeNotifier {
   final EventRepository _eventRepo = EventRepository();
   final UserRepository _userRepo = UserRepository();
