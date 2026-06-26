@@ -26,10 +26,10 @@ class EventModel {
   final String crewQrCodeData;
   final String? imageUrl;
   final String? posterUrl;
-  final String? headerUrl;
   final bool hasPaperwork;
   final int? maxCapacity;
   final String category; // Sports | Academic | Arts | Cultural | Other
+  final double fee;
 
   EventModel({
     required this.eventId,
@@ -45,13 +45,13 @@ class EventModel {
     required this.crewQrCodeData,
     this.imageUrl,
     this.posterUrl,
-    this.headerUrl,
     this.hasPaperwork = false,
     this.maxCapacity,
     this.category = 'Other',
+    this.fee = 0.0,
   });
 
-  String? get displayImageUrl => posterUrl ?? headerUrl ?? (imageUrl?.trim().isEmpty == true ? null : imageUrl?.trim());
+  String? get displayImageUrl => posterUrl ?? imageUrl;
 
   Map<String, dynamic> toMap() => {
     'title': title,
@@ -66,11 +66,25 @@ class EventModel {
     'crewQrCodeData': crewQrCodeData,
     'imageUrl': imageUrl,
     'posterUrl': posterUrl,
-    'headerUrl': headerUrl,
     'hasPaperwork': hasPaperwork,
     'maxCapacity': maxCapacity,
     'category': category,
+    'fee': fee,
   };
+
+  static String? _cleanUrl(dynamic url) {
+    if (url == null) return null;
+    final str = url.toString().trim();
+    if (str.isEmpty) return null;
+    return str;
+  }
+
+  static double _parseFee(dynamic val) {
+    if (val == null) return 0.0;
+    if (val is num) return val.toDouble();
+    if (val is String) return double.tryParse(val) ?? 0.0;
+    return 0.0;
+  }
 
   factory EventModel.fromMap(Map<String, dynamic> map, String documentId) {
     return EventModel(
@@ -85,12 +99,12 @@ class EventModel {
       createdBy: map['createdBy'] ?? '',
       attendeeQrCodeData: map['attendeeQrCodeData'] ?? '',
       crewQrCodeData: map['crewQrCodeData'] ?? '',
-      imageUrl: map['imageUrl'],
-      posterUrl: map['posterUrl'],
-      headerUrl: map['headerUrl'],
+      imageUrl: _cleanUrl(map['imageUrl']),
+      posterUrl: _cleanUrl(map['posterUrl']),
       hasPaperwork: map['hasPaperwork'] ?? false,
       maxCapacity: map['maxCapacity'],
       category: map['category'] ?? 'Other',
+      fee: _parseFee(map['fee'] ?? map['registrationFee']),
     );
   }
 }

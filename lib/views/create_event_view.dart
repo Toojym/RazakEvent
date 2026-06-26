@@ -130,6 +130,9 @@ class _CreateEventViewState extends State<CreateEventView> {
       return;
     }
 
+    double fee = (int.tryParse(feeRinggitController.text) ?? 0).toDouble() +
+        ((int.tryParse(feeCentsController.text) ?? 0) / 100.0);
+
     final errorMessage = await viewModel.submitEvent(
       title: titleController.text,
       description: descriptionController.text,
@@ -140,6 +143,7 @@ class _CreateEventViewState extends State<CreateEventView> {
       crewMeritPoints: crewMerits,
       maxCapacity: slots,
       category: selectedCategory ?? 'Other',
+      fee: fee,
     );
 
     if (!mounted) return;
@@ -215,99 +219,6 @@ class _CreateEventViewState extends State<CreateEventView> {
                           key: _formKey,
                           child: Column(
                             children: [
-                              // ── AI Auto-Fill OCR Banner ─────────────────────
-                              Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.only(bottom: 24),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF8E2DE2).withValues(alpha: 0.3),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(16),
-                                    onTap: viewModel.isAiScanning ? null : () async {
-                                      final data = await viewModel.scanPosterWithAi();
-                                      if (!context.mounted) return;
-                                      if (data != null) {
-                                        if (data['title'] != null && data['title'].toString().isNotEmpty) {
-                                          titleController.text = data['title'].toString();
-                                        }
-                                        if (data['description'] != null && data['description'].toString().isNotEmpty) {
-                                          descriptionController.text = data['description'].toString();
-                                        }
-                                        if (data['location'] != null && data['location'].toString().isNotEmpty) {
-                                          locationController.text = data['location'].toString();
-                                        }
-                                        if (data['category'] != null) {
-                                          setState(() {
-                                            selectedCategory = data['category'].toString();
-                                          });
-                                        }
-                                        if (data['attendeeMerit'] != null) {
-                                          attendeeMeritController.text = data['attendeeMerit'].toString();
-                                        }
-                                        if (data['crewMerit'] != null) {
-                                          crewMeritController.text = data['crewMerit'].toString();
-                                        }
-
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text("Event details extracted! You can edit them before saving."),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
-                                      } else if (!viewModel.isAiScanning) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text("Could not extract details from image. Please enter manually."),
-                                            backgroundColor: Colors.redAccent,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          if (viewModel.isAiScanning) ...[
-                                            const SizedBox(
-                                              width: 18,
-                                              height: 18,
-                                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            const Text(
-                                              "Scanning Poster OCR...",
-                                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
-                                            ),
-                                          ] else ...[
-                                            const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
-                                            const SizedBox(width: 10),
-                                            const Text(
-                                              "Auto-Fill from Poster (AI OCR)",
-                                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
                               _FormRow(
                                 label: 'Event Name',
                                 child: _PillTextField(controller: titleController),
@@ -426,32 +337,6 @@ class _CreateEventViewState extends State<CreateEventView> {
                                               padding: const EdgeInsets.all(8.0),
                                               child: Text(
                                                 viewModel.posterImage!.name,
-                                                style: const TextStyle(color: Colors.black, fontSize: 12),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            )
-                                          : const Icon(Icons.image_outlined, color: Colors.black),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              _FormRow(
-                                label: 'Upload Event Header',
-                                alignTop: true,
-                                child: GestureDetector(
-                                  onTap: () => viewModel.pickImage(false),
-                                  child: Container(
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Center(
-                                      child: viewModel.headerImage != null
-                                          ? Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                viewModel.headerImage!.name,
                                                 style: const TextStyle(color: Colors.black, fontSize: 12),
                                                 textAlign: TextAlign.center,
                                               ),

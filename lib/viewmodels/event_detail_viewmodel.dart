@@ -48,10 +48,16 @@ class EventDetailViewModel extends ChangeNotifier {
   String get startTime => DateFormat('h:mm a').format(event.date);
   
   // Mock data for missing fields
-  String get duration => '1 Day'; // Default mock
-  String get endTime => DateFormat('h:mm a').format(event.date.add(const Duration(hours: 3))); // Mock 3 hours
-  String get status => 'Unregistered'; // Mock status
-  String get fee => 'RM 5.00'; // Mock fee
+  String get duration {
+    if (event.endDate != null) {
+      final days = event.endDate!.difference(event.date).inDays;
+      return days > 0 ? '$days Day${days > 1 ? 's' : ''}' : '1 Day';
+    }
+    return '1 Day';
+  }
+  String get endTime => event.endDate != null ? DateFormat('h:mm a').format(event.endDate!) : DateFormat('h:mm a').format(event.date.add(const Duration(hours: 3)));
+  String get status => _isRegistered ? 'Registered' : 'Unregistered';
+  String get fee => event.fee == 0 ? 'Free' : 'RM ${event.fee.toStringAsFixed(2)}';
 
   // Dynamic slots data
   int get filledSlots => _totalRegistered;

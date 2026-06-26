@@ -22,9 +22,6 @@ class EditEventViewModel extends ChangeNotifier {
   XFile? _posterImage;
   XFile? get posterImage => _posterImage;
 
-  XFile? _headerImage;
-  XFile? get headerImage => _headerImage;
-
   PlatformFile? _paperworkFile;
   PlatformFile? get paperworkFile => _paperworkFile;
 
@@ -43,10 +40,8 @@ class EditEventViewModel extends ChangeNotifier {
       if (pickedFile != null) {
         if (isPoster) {
           _posterImage = pickedFile;
-        } else {
-          _headerImage = pickedFile;
+          if (!_isDisposed) notifyListeners();
         }
-        if (!_isDisposed) notifyListeners();
       }
     } catch (e) {
       _errorMessage = e.toString();
@@ -75,6 +70,7 @@ class EditEventViewModel extends ChangeNotifier {
     required String description,
     required String location,
     required DateTime date,
+    double fee = 0.0,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -82,19 +78,12 @@ class EditEventViewModel extends ChangeNotifier {
 
     try {
       String? finalPosterUrl = originalEvent.posterUrl;
-      String? finalHeaderUrl = originalEvent.headerUrl;
       bool finalHasPaperwork = originalEvent.hasPaperwork;
 
       if (_posterImage != null) {
         final bytes = await _posterImage!.readAsBytes();
         final ext = _posterImage!.name.split('.').last.toLowerCase();
         finalPosterUrl = await _storageRepo.uploadEventImage(bytes, ext, isPoster: true);
-      }
-
-      if (_headerImage != null) {
-        final bytes = await _headerImage!.readAsBytes();
-        final ext = _headerImage!.name.split('.').last.toLowerCase();
-        finalHeaderUrl = await _storageRepo.uploadEventImage(bytes, ext, isPoster: false);
       }
 
       if (_paperworkFile != null && _paperworkFile!.bytes != null) {
@@ -116,7 +105,7 @@ class EditEventViewModel extends ChangeNotifier {
         }
       }
 
-      final updatedImageUrl = finalPosterUrl ?? finalHeaderUrl ?? originalEvent.imageUrl;
+      final updatedImageUrl = finalPosterUrl ?? originalEvent.imageUrl;
 
       final updatedEvent = EventModel(
         eventId: originalEvent.eventId,
@@ -124,6 +113,7 @@ class EditEventViewModel extends ChangeNotifier {
         description: description,
         category: originalEvent.category,
         date: date,
+        endDate: originalEvent.endDate,
         location: location,
         imageUrl: updatedImageUrl,
         crewQrCodeData: originalEvent.crewQrCodeData,
@@ -131,13 +121,15 @@ class EditEventViewModel extends ChangeNotifier {
         createdBy: originalEvent.createdBy,
         hasPaperwork: finalHasPaperwork,
         posterUrl: finalPosterUrl,
-        headerUrl: finalHeaderUrl,
         attendeeMeritPoints: originalEvent.attendeeMeritPoints,
         crewMeritPoints: originalEvent.crewMeritPoints,
         maxCapacity: originalEvent.maxCapacity,
+        fee: fee,
       );
 
       await _repository.updateEvent(updatedEvent);
+      _posterImage = null;
+      _paperworkFile = null;
       return true;
     } catch (e) {
       _errorMessage = e.toString();

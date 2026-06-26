@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/event_model.dart';
@@ -33,6 +34,8 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
   late TextEditingController descriptionController;
   late TextEditingController locationController;
   late TextEditingController durationController;
+  late TextEditingController feeRinggitController;
+  late TextEditingController feeCentsController;
   
   DateTime? selectedDate;
   TimeOfDay? startTime;
@@ -45,6 +48,10 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
     descriptionController = TextEditingController(text: widget.event.description);
     locationController = TextEditingController(text: widget.event.location);
     durationController = TextEditingController(text: '1');
+    final int ringgit = widget.event.fee.floor();
+    final int cents = ((widget.event.fee - ringgit) * 100).round();
+    feeRinggitController = TextEditingController(text: ringgit > 0 ? '$ringgit' : '');
+    feeCentsController = TextEditingController(text: cents > 0 ? cents.toString().padLeft(2, '0') : '');
     selectedDate = widget.event.date;
     startTime = TimeOfDay(hour: widget.event.date.hour, minute: widget.event.date.minute);
     endTime = TimeOfDay(hour: widget.event.date.hour + 2, minute: widget.event.date.minute);
@@ -56,6 +63,8 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
     descriptionController.dispose();
     locationController.dispose();
     durationController.dispose();
+    feeRinggitController.dispose();
+    feeCentsController.dispose();
     super.dispose();
   }
 
@@ -257,29 +266,42 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
                           ),
                         ),
                         _FormRow(
-                          label: 'Upload Event Header',
-                          alignTop: true,
-                          child: GestureDetector(
-                            onTap: () => vm.pickImage(false),
-                            child: Container(
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
+                          label: 'Registration Fee',
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1E1E1E),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: Colors.white24),
+                                ),
+                                child: const Text('RM', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                               ),
-                              child: Center(
-                                child: vm.headerImage != null
-                                    ? Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          vm.headerImage!.name,
-                                          style: const TextStyle(color: Colors.black, fontSize: 12),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      )
-                                    : const Icon(Icons.upload_outlined, color: Colors.black),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 3,
+                                child: _PillTextField(
+                                  controller: feeRinggitController,
+                                  hintText: '0',
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                ),
                               ),
-                            ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6),
+                                child: Text('.', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: _PillTextField(
+                                  controller: feeCentsController,
+                                  hintText: '00',
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -301,12 +323,16 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
                                   startTime!.minute,
                                 );
 
+                                double fee = (int.tryParse(feeRinggitController.text) ?? 0).toDouble() +
+                                    ((int.tryParse(feeCentsController.text) ?? 0) / 100.0);
+
                                 final success = await vm.updateEvent(
                                   originalEvent: widget.event,
                                   title: titleController.text,
                                   description: descriptionController.text,
                                   location: locationController.text,
                                   date: updatedDate,
+                                  fee: fee,
                                 );
 
                                 if (success && context.mounted) {
