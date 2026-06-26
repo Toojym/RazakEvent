@@ -325,7 +325,7 @@ class _CreateEventViewState extends State<CreateEventView> {
                                 label: 'Upload Event Poster',
                                 alignTop: true,
                                 child: GestureDetector(
-                                  onTap: () => viewModel.pickImage(true),
+                                  onTap: () => viewModel.pickPoster(),
                                   child: Container(
                                     height: 80,
                                     decoration: BoxDecoration(
@@ -333,11 +333,11 @@ class _CreateEventViewState extends State<CreateEventView> {
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Center(
-                                      child: viewModel.posterImage != null
+                                      child: viewModel.posterFile != null
                                           ? Padding(
                                               padding: const EdgeInsets.all(8.0),
                                               child: Text(
-                                                viewModel.posterImage!.name,
+                                                viewModel.posterFile!.name,
                                                 style: const TextStyle(color: Colors.black, fontSize: 12),
                                                 textAlign: TextAlign.center,
                                               ),

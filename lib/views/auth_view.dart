@@ -150,11 +150,11 @@ class _AuthViewState extends State<AuthView> {
                     ),
                   ),
 
-                  // ── "Powered by Puzi" footer ─────────────────
+                  // ── "Powered by Puzl" footer ─────────────────
                   const Padding(
                     padding: EdgeInsets.only(bottom: 20),
                     child: Text(
-                      'Powered by Puzi',
+                      'Powered by Puzl',
                       style: TextStyle(
                         color: Colors.white54,
                         fontSize: 12,

@@ -244,7 +244,7 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
                           label: 'Upload Event Poster',
                           alignTop: true,
                           child: GestureDetector(
-                            onTap: () => vm.pickImage(true),
+                            onTap: () => vm.pickPoster(),
                             child: Container(
                               height: 80,
                               decoration: BoxDecoration(
@@ -252,11 +252,11 @@ class _EditEventViewBodyState extends State<_EditEventViewBody> {
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Center(
-                                child: vm.posterImage != null
+                                child: vm.posterFile != null
                                     ? Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
-                                          vm.posterImage!.name,
+                                          vm.posterFile!.name,
                                           style: const TextStyle(color: Colors.black, fontSize: 12),
                                           textAlign: TextAlign.center,
                                         ),

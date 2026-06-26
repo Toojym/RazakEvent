@@ -32,18 +32,22 @@ class _EventDetailBody extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ── Blurred Glassy Poster Background ─────────────────
+          // ── Blurred Poster Background (iPhone glass effect) ────
           if (vm.event.displayImageUrl != null)
             Image.network(
               vm.event.displayImageUrl!,
+              width: double.infinity,
+              height: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (ctx, err, stack) => Container(decoration: AppTheme.backgroundDecoration2),
             )
           else
             Container(decoration: AppTheme.backgroundDecoration2),
+
+          // ── Frosted glass overlay ──────────────────────────────
           BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-            child: Container(color: Colors.black.withValues(alpha: 0.7)),
+            filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
+            child: Container(color: Colors.black.withValues(alpha: 0.6)),
           ),
 
           // ── Main Content ────────────────────────────────────
@@ -74,13 +78,13 @@ class _EventDetailBody extends StatelessWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Poster
+                            // Poster image on the left
                             Expanded(
                               flex: 4,
                               child: _PosterImage(event: vm.event),
                             ),
                             const SizedBox(width: 16),
-                            // Details
+                            // Details on the right
                             Expanded(
                               flex: 5,
                               child: _EventDetailsList(),
@@ -168,12 +172,12 @@ class _EventDetailBody extends StatelessWidget {
                         ),
                         const SizedBox(height: 32),
                       ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         ],
       ),
     );
@@ -214,22 +218,25 @@ class _PosterImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 240,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white24, width: 0.5),
-        image: event.displayImageUrl != null
-            ? DecorationImage(
-                image: NetworkImage(event.displayImageUrl!),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 240,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white24, width: 0.5),
+        ),
+        child: event.displayImageUrl != null
+            ? Image.network(
+                event.displayImageUrl!,
+                width: double.infinity,
+                height: 240,
                 fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _PlaceholderPoster(event: event),
               )
-            : null,
+            : _PlaceholderPoster(event: event),
       ),
-      child: event.displayImageUrl == null
-          ? _PlaceholderPoster(event: event)
-          : null,
     );
   }
 }
@@ -343,4 +350,3 @@ class _DetailRow extends StatelessWidget {
     );
   }
 }
-

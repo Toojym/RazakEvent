@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/event_model.dart';
@@ -19,8 +18,8 @@ class EditEventViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  XFile? _posterImage;
-  XFile? get posterImage => _posterImage;
+  PlatformFile? _posterFile;
+  PlatformFile? get posterFile => _posterFile;
 
   PlatformFile? _paperworkFile;
   PlatformFile? get paperworkFile => _paperworkFile;
@@ -33,15 +32,17 @@ class EditEventViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> pickImage(bool isPoster) async {
+  /// Pick an image file for the event poster.
+  /// Uses FilePicker with withData: true for reliable web support.
+  Future<void> pickPoster() async {
     try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-      if (pickedFile != null) {
-        if (isPoster) {
-          _posterImage = pickedFile;
-          if (!_isDisposed) notifyListeners();
-        }
+      final result = await FilePicker.pickFiles(
+        type: FileType.image,
+        withData: true,
+      );
+      if (result != null && result.files.isNotEmpty) {
+        _posterFile = result.files.first;
+        if (!_isDisposed) notifyListeners();
       }
     } catch (e) {
       _errorMessage = e.toString();
@@ -77,15 +78,17 @@ class EditEventViewModel extends ChangeNotifier {
     if (!_isDisposed) notifyListeners();
 
     try {
+      // Keep existing poster URL unless a new poster is picked
       String? finalPosterUrl = originalEvent.posterUrl;
       bool finalHasPaperwork = originalEvent.hasPaperwork;
 
-      if (_posterImage != null) {
-        final bytes = await _posterImage!.readAsBytes();
-        final ext = _posterImage!.name.split('.').last.toLowerCase();
-        finalPosterUrl = await _storageRepo.uploadEventImage(bytes, ext, isPoster: true);
+      // Upload new poster if one was picked
+      if (_posterFile != null && _posterFile!.bytes != null) {
+        final ext = _posterFile!.extension?.toLowerCase() ?? 'jpg';
+        finalPosterUrl = await _storageRepo.uploadEventPoster(_posterFile!.bytes!, ext);
       }
 
+      // Upload new paperwork if one was picked
       if (_paperworkFile != null && _paperworkFile!.bytes != null) {
         final pwUrl = await _storageRepo.uploadEventPaperwork(_paperworkFile!.bytes!, _paperworkFile!.name);
         finalHasPaperwork = true;
@@ -105,8 +108,6 @@ class EditEventViewModel extends ChangeNotifier {
         }
       }
 
-      final updatedImageUrl = finalPosterUrl ?? originalEvent.imageUrl;
-
       final updatedEvent = EventModel(
         eventId: originalEvent.eventId,
         title: title,
@@ -115,7 +116,6 @@ class EditEventViewModel extends ChangeNotifier {
         date: date,
         endDate: originalEvent.endDate,
         location: location,
-        imageUrl: updatedImageUrl,
         crewQrCodeData: originalEvent.crewQrCodeData,
         attendeeQrCodeData: originalEvent.attendeeQrCodeData,
         createdBy: originalEvent.createdBy,
@@ -128,7 +128,7 @@ class EditEventViewModel extends ChangeNotifier {
       );
 
       await _repository.updateEvent(updatedEvent);
-      _posterImage = null;
+      _posterFile = null;
       _paperworkFile = null;
       return true;
     } catch (e) {

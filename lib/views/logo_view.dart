@@ -83,7 +83,7 @@ class _LogoScreenState extends State<LogoScreen>
               const Padding(
                 padding: EdgeInsets.only(bottom: 32),
                 child: Text(
-                  'Powered by Puzi',
+                  'Powered by Puzl',
                   style: TextStyle(
                     color: Colors.white54,
                     fontSize: 12,

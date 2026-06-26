@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/event_model.dart';
 import '../utils/app_theme.dart';
 import '../viewmodels/home_viewmodel.dart';
+import '../viewmodels/chat_assistant_viewmodel.dart';
 import 'chat_assistant_modal.dart';
 import 'event_detail_view.dart';
 
@@ -28,20 +29,27 @@ class HomeView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: _bgColor,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => ChatAssistantModal(activeEvents: vm.allUpcomingEvents),
-          );
-        },
-        backgroundColor: AppTheme.primaryBlue,
-        icon: const Icon(Icons.smart_toy_outlined, color: Colors.white),
-        label: const Text(
-          "Ask RazakAI",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 70),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            final chatVm = context.read<ChatAssistantViewModel>();
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => ChangeNotifierProvider.value(
+                value: chatVm,
+                child: ChatAssistantModal(activeEvents: vm.allUpcomingEvents),
+              ),
+            );
+          },
+          backgroundColor: AppTheme.primaryBlue,
+          icon: const Icon(Icons.smart_toy_outlined, color: Colors.white),
+          label: const Text(
+            "Ask RazakAI",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
       body: CustomScrollView(
@@ -512,6 +520,8 @@ class _EventCard extends StatelessWidget {
             child: event.displayImageUrl != null
                 ? Image.network(
                     event.displayImageUrl!,
+                    width: double.infinity,
+                    height: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => _CardPlaceholder(event: event),
                   )
