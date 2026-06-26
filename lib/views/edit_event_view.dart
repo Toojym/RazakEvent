@@ -416,8 +416,15 @@ class _FormRow extends StatelessWidget {
 class _PillTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
+  final String? hintText;
+  final List<TextInputFormatter>? inputFormatters;
 
-  const _PillTextField({required this.controller, this.keyboardType = TextInputType.text});
+  const _PillTextField({
+    required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.hintText,
+    this.inputFormatters,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -426,8 +433,11 @@ class _PillTextField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         style: const TextStyle(color: Colors.black, fontSize: 10),
         decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Colors.black38, fontSize: 10),
           filled: true,
           fillColor: Colors.white,
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
